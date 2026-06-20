@@ -1,0 +1,13 @@
+
+originals
+
+*.ppignore
+*.ppstorage
+
+aria_log**
+
+mysql
+
+!/data
+/data/*
+!/data/config
