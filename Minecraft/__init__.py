@@ -8,6 +8,8 @@ from philh_myftp_biz.file import JSON
 # Minecraft Module
 this = Module('E:/Minecraft/')
 
+java_exe = this.child('/.java/bin/java.exe')
+
 #============================================================
 
 # Parsed Command Line Arguements

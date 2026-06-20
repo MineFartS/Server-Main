@@ -1,0 +1,5 @@
+[submodule "Minecraft/.java"]
+	path = Minecraft/.java
+	url = https://github.com/MineFartS/JDK
+	branch = 25
+    ignore = all
