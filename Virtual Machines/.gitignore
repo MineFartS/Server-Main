@@ -4,3 +4,7 @@
 /VHDXs/
 
 *.vhdx
+*.vmcs
+*.vmgs
+*.vmrs
+*.vmcx
