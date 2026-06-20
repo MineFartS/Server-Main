@@ -3,6 +3,8 @@ from philh_myftp_biz.modules import Module
 from philh_myftp_biz.json import Dict
 from philh_myftp_biz.file import JSON
 
+version = "26.1"
+
 #============================================================
 
 # Minecraft Module

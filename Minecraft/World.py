@@ -1,12 +1,11 @@
-from philh_myftp_biz.web.minecraft import ModrinthMod, FabricMC
-from philh_myftp_biz.web import FirewallException, URL
+from philh_myftp_biz.web import FirewallException
 from philh_myftp_biz.classtools import singleton
 from philh_myftp_biz.process import Start
+from . import this, args, PIDs, java_exe
 from philh_myftp_biz.terminal import Log
 from philh_myftp_biz.json import Dict
 from philh_myftp_biz.file import INI
 from philh_myftp_biz.pc import Path
-from . import this, args, PIDs, java_exe
 from re import search
 
 class World(Path):
@@ -15,11 +14,12 @@ class World(Path):
         super().__init__(f'E:/Minecraft/Worlds/{name}/')
 
     def start(self) -> Start:
+        from .Files import files
 
         #======================================================
 
-        for name, url in self.files.items():
-            URL(url).cache(self.child(name))
+        for name, url in files.items():
+            url.cache(self.child(name))
 
         #======================================================
 
@@ -82,35 +82,6 @@ world/session.lock
         #======================================================
 
         return process
-
-    @property
-    def files(self):
-
-        files: dict[str, str] = {}
-
-        #========================================================================
-        # Geyser
-
-        files['mods/Geyser.jar'] = 'https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/fabric'
-
-        #========================================================================
-        # Fabric Server
-
-        files['fabric-server-launch.jar'] = FabricMC.server_jar
-
-        #========================================================================
-        # Floodgate
-
-        files['mods/Floodgate.jar'] = ModrinthMod('floodgate').url
-
-        #========================================================================
-        # Fabric API
-
-        files['mods/Fabric API.jar'] = ModrinthMod('fabric-api').url
-
-        #========================================================================
-
-        return files
 
     @property
     def port(self) -> int:
