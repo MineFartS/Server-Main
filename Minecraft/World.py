@@ -12,12 +12,6 @@ from re import search
 
 class World(Path):
 
-    port: int
-    GIT_IGNORE: str
-    args: list[str]
-    files: dict[str, None|str]
-    configure: Callable
-
     def __init__(self, name:str) -> None:
         super().__init__(f'E:/Minecraft/Worlds/{name}/')
 
@@ -26,43 +20,27 @@ class World(Path):
         #======================================================
 
         for name, url in self.files.items():
-
-            if url is None:
-                Log.WARN(f'Mod Not Found: {name}')
-
-            dst = self.child(name)
-
-            URL(url).cache(dst)
+            URL(url).cache(self.child(name))
 
         #======================================================
 
-        process = Start(self.args, dir=self)
+        process = Start(
+            args =[
+                'java', 
+                '-Xmx2G',
+                '-jar', 'fabric-server-launch.jar',
+                'nogui'
+            ],
+            dir = self
+        )
 
         PIDs[self.name] = process._process.pid
 
         #======================================================
         # GIT IGNORE
 
-        gitignore = self.child('.gitignore')
-
-        with gitignore.open('w') as f:
-            f.write(self.GIT_IGNORE)
-
-        #======================================================
-        # FIREWALL
-
-        fe = FirewallException(f'Minecraft World: {self.name}')
-        fe.set(self.port)
-
-        #======================================================
-
-        self.configure()
-
-        return process
-
-class Java(World):
-
-    GIT_IGNORE = """
+        with self.child('.gitignore').open('w') as f:
+            f.write("""
 # Hide Everything
 /*
 
@@ -88,14 +66,23 @@ world/session.lock
 /config/Geyser-Fabric/*
 !/config/Geyser-Fabric/config.yml
 
-"""
+""")
 
-    args = [
-        'java', 
-        '-Xmx2G',
-        '-jar', 'fabric-server-launch.jar',
-        'nogui'
-    ]
+        #======================================================
+        # EULA
+
+        eula = Dict(INI(self.child('eula.txt')))
+        eula['eula'] = True
+
+        #======================================================
+        # FIREWALL
+
+        fe = FirewallException(f'Minecraft World: {self.name}')
+        fe.set(self.port)
+
+        #======================================================
+
+        return process
 
     @property
     def files(self):
@@ -110,15 +97,15 @@ world/session.lock
         #========================================================================
         # Fabric Server
 
-        files['fabric-server-launch.jar'] = FabricMC().serverURL
+        files['fabric-server-launch.jar'] = FabricMC.server_jar
 
         #========================================================================
-        # JAVA - Floodgate
+        # Floodgate
 
         files['mods/Floodgate.jar'] = ModrinthMod('floodgate').url
 
         #========================================================================
-        # JAVA - Fabric API
+        # Fabric API
 
         files['mods/Fabric API.jar'] = ModrinthMod('fabric-api').url
 
@@ -131,9 +118,6 @@ world/session.lock
 
         props = self.child('server.properties')
 
-        while not props.exists:
-            pass
-
         r = search(
             pattern = r'\nserver-port=(.*)',
             string = props.open().read()
@@ -141,50 +125,35 @@ world/session.lock
 
         return int(r.group(1))
 
-    def configure(self):
-        # Agree to the EULA
-        eula = Dict(INI(self.child('eula.txt')))
-        eula['eula'] = True
-
-class Bedrock(World):
-    ... # TODO
-
 #================================================================================================
 
 @singleton
-class Worlds(list[Java|Bedrock]):
+class Worlds(list[World]):
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        if args['world']:
+            self += args['world']
+
+        else:
+            for s in this.child('/Worlds/').children:
+                if s.is_dir:
+
+                    self += s.name
 
     def __iadd__(self, name:str):
 
-        Log.INFO(f"Selected World: {name}")
-
-        edition_ini = INI(Path(f'E:/Minecraft/Worlds/{name}/edition.ini'))
-
-        match edition_ini.read()['edition']: # pyright: ignore[reportMatchNotExhaustive]
-
-            case 'Java':
-                world = Java(name)
-            
-            case 'Bedrock':
-                world = Bedrock(name)
-
-        super().__iadd__([world]) # pyright: ignore[reportPossiblyUnboundVariable]
+        super().__iadd__([World(name)])
 
         return self
+    
+    def __iter__(self):
 
-#================================================================================================
+        _iter = super().__iter__()
 
-# If a specific world is given
-if args['world']:
-
-    Worlds += args['world']
-
-else:
-
-    for s in this.child('/Worlds/').children:
-
-        if s.seg()[0] != '.':
-
-            Worlds += s.name
+        for w in _iter:
+            Log.INFO(f"Selected World: {w.name}")
+            yield w
 
 #================================================================================================
