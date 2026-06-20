@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>Login</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+
+	</head>	
+
+	<body>
+
+		<a
+			class = "back"
+			id = "back"
+			onclick = "href = back"
+		>Back</a>
+
+		<a class="title" id="title">{Title}</a>
+
+		<input
+			class = "smalloption"
+			type = "text"
+			id = "username"
+			placeholder = "Username"
+		>
+
+		<input
+			class = "smalloption"
+			type = "password"
+			id = "password"
+			placeholder = "Password"
+		>
+
+		<a
+			class = "submit"
+			onclick = "wrap.run()"
+		>Log In</a>
+
+		<a
+			class = "smalloption"
+			onclick = "href = `../Create?dest=${parameters.dest}`"
+		>Create Account</button>
+
+		<a
+			class = "smalloption"
+			onclick = "href = `../Change?dest=${parameters.dest}`"
+		>Change Password</button>
+
+	</body>
+
+	<script type="text/javascript" src="/_/main.js"></script>
+
+	<script type="text/javascript" src="/_/Account/script.js"></script>
+
+    <script>
+        let wrap = new APIwrapper('check');
+    </script>
+
+</html>

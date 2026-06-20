@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>Change Password</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+
+	</head>	
+
+	<body>
+
+		<a
+			class = "back"
+			id = "back"
+			onclick = "href = `../Login?dest=${parameters.dest}`"
+		>Log In</a>
+
+		<a class="title" id="title">{Title}</a>
+
+		<input
+			class = "smalloption"
+			type = "text"
+			id = "username"
+			placeholder = "Username"
+		>
+
+		<input
+			class = "smalloption"
+			type = "password"
+			id = "password"
+			placeholder = "Current Password"
+		>
+
+        <input
+			class = "smalloption"
+			type = "password"
+			id = "newpassword"
+			placeholder = "New Password"
+		>
+
+		<a
+			class = "submit"
+			onclick = "run()"
+		>Change</a>
+
+	</body>
+
+	<script type="text/javascript" src="/_/main.js"></script>
+
+	<script type="text/javascript" src="/_/Account/script.js"></script>
+
+    <script>
+
+        e['newpassword'] = document.getElementById('newpassword');
+
+        let wrap = new APIwrapper('change');
+
+        run = () => wrap.run({
+            'newpassword': e.newpassword.value
+        })
+        
+    </script>
+
+</html>

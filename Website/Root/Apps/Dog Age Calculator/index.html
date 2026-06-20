@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>Dog Age Calculator</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+        <link rel="stylesheet" href="style.css">
+
+	</head>	
+
+	<body>
+
+		<a class="back" id="back" href="..">{Back}</a>
+
+		<a class="title" id="title">{Title}</a>
+
+        <div id="content">
+
+            <textarea
+                id = "Human"
+                readonly
+            ></textarea>
+
+            <textarea
+                id = "Dog"
+                readonly
+            ></textarea>
+
+        </div>
+
+	</body>
+
+	<script src="/_/main.js"></script>
+
+    <script>
+
+        const script = document.createElement('script');
+
+        if (Object.keys(parameters).length == 2) {
+            script.src = 'MainApp.js'; 
+        } else {
+            script.src = 'Setup.js'
+        }
+
+        document.body.appendChild(script)
+    
+    </script>
+
+</html>

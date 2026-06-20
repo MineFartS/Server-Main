@@ -1,0 +1,12 @@
+
+enabled: true
+
+watch_files: []
+
+packages: [
+  'ollama',
+  'diffusers',
+  'transformers',
+  'accelerate',
+  'torch torchvision --index-url https://download.pytorch.org/whl/cu126'
+]

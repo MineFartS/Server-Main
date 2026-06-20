@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>Download</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+		<link rel="stylesheet" href="style.css">
+
+	</head>	
+	
+	<body>
+
+		<a class="back" id="back" href="..">Back</a>
+
+		<a class="title" id="title">{Title}></a>
+		
+		<input
+			id = "Search"
+			type = "text"
+			class = "form"
+			maxlength = "100"
+			placeholder = "Type Here"
+		/>
+
+		<div id="options" class="scroll-container"></div>
+
+	</body>
+	
+	<script type="text/javascript" src="/_/main.js"></script>
+
+    <script>
+        e['options'] = document.getElementById('options')
+        e['search'] = document.getElementById('Search')
+    </script>
+
+    <script type="text/javascript" src="request.js"></script>	
+    <script type="text/javascript" src="search.js"></script>
+
+</html>

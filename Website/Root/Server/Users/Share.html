@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>User Web Shares</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+
+	</head>	
+
+	<body>
+
+		<a class="back" id="back" href=".">{Back}</a>
+
+		<a class="title" id="title">{Title}</a>
+
+        <form method="GET" enctype="multipart/form-data">
+
+            <input
+                type = "text" 
+                name = "username" 
+                placeholder = "Username"
+                class = "form"
+            >
+
+            <input
+                type = "text"
+                name = "path"
+                value = "/"
+                class = "hide"
+            >
+
+            <input 
+                class = "form"
+                type = "submit" 
+                value = "Open"
+            >
+
+        </form>
+	
+	</body>
+
+    <script src="/_/main.js"></script>
+
+    <script>
+
+        e['form'] = document.forms[0];
+        e['username'] = document.getElementsByName('username')[0];
+
+        e.form.action = `${API.url}/Server/Users/open`;
+
+        if (cookies.username != undefined) {
+            e.username.value = cookies.username
+        }
+
+    </script>
+
+</html>

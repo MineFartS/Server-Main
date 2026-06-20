@@ -1,0 +1,10 @@
+
+enabled: true
+
+watch_files: []
+
+packages: [
+  "git+https://github.com/MineFartS/fastapi",
+  "aiofiles",
+  "yt-dlp"
+]

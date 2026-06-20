@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>Control</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+		<link rel="stylesheet" href="style.css">
+
+	</head>	
+
+	<body>
+
+		<a class="back" id="back" href="..">{Back}</a>
+
+		<a class="title" id="title">{Title}</a>
+
+		<label class="switch">
+			<input type="checkbox" onchange="update()">
+			<span class="slider round"></span>
+		</label>
+
+        <hr class="hide">
+
+        <button 
+			onclick = "connect()"
+			class = "submit"
+		>Connect</button>
+	
+	</body>
+
+	<script src="/_/main.js"></script>
+
+	<script src="script.js"></script>
+
+</html>

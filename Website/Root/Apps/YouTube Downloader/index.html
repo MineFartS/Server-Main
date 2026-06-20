@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>YouTube Downloader</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+		<link rel="stylesheet" href="style.css">
+
+	</head>
+
+	<body>
+
+		<a id="back" class="back" href="..">{Back}</button>
+		
+		<a id="title" class="title">{Title}</a>
+
+		<form id="form" onsubmit="download(event)">
+			
+			<label for="url">Video URL</label>
+			<br>
+			<input required name="url" type="text" placeholder="Type Here">
+
+			<br>
+
+			<label for="format">Output Format</label>
+			<br>
+			<select name="format" width="20em">
+				<option selected value="video">Video + Audio (mp4)</option>
+				<option value="audio">Audio (mp3)</option>
+				<option value="thumbnail">Thumbnail (jpg)</option>
+			</select>
+
+			<br>
+
+			<input type="submit" id="submit" value="Fetch">
+
+		</form>
+
+	</body>
+
+	<script src="/_/main.js"></script>
+
+	<script src="script.js"></script>
+
+</html>

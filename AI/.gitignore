@@ -1,0 +1,9 @@
+
+# Ollama Data
+/Ollama/Data
+
+# Stable Diffusion Data
+/StableDiffusion/Data
+
+# Cache
+**/__pycache__/
