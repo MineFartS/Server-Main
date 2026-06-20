@@ -6,8 +6,7 @@ from philh_myftp_biz.terminal import Log
 from philh_myftp_biz.json import Dict
 from philh_myftp_biz.file import INI
 from philh_myftp_biz.pc import Path
-from . import this, args, PIDs
-from typing import Callable
+from . import this, args, PIDs, java_exe
 from re import search
 
 class World(Path):
@@ -25,8 +24,8 @@ class World(Path):
         #======================================================
 
         process = Start(
-            args =[
-                'java', 
+            args = [
+                java_exe, 
                 '-Xmx2G',
                 '-jar', 'fabric-server-launch.jar',
                 'nogui'
