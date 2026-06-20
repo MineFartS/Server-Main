@@ -1,0 +1,16 @@
+#content2 {
+    display: grid;
+    width: 80vw;
+    height: 50vh;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-template-rows: repeat(2, 1fr);    /* 2 rows */
+    gap: 10px;
+}
+
+#content2 img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
+}

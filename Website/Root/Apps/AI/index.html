@@ -1,0 +1,125 @@
+<!DOCTYPE html><html>
+<title>AI</title>
+<link rel="icon" type="image/x-icon" href="/_embed_media/favicon.ico">
+<link rel="stylesheet" href="/_embed_media/css/general.css">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+	textarea {
+		text-align: center;
+		font-size: 3em;
+		padding: .4em 0.25em;
+		cursor: pointer;
+		color: black;
+		background-color: rgb(228, 228, 228);
+		border: 2px solid black;
+		border-radius: 5px;
+		resize: none;
+ 	}
+
+	textarea.input {
+		width: 60vw;
+		height: 3em;
+	}
+
+	textarea.response {
+		text-align: left;
+		width: 80vw;
+		height: 10em;
+
+	}
+</style>
+<body>
+	<hr class="hide">
+
+	<button id="back" class="back">Back</button>
+
+	<hr class="hide">
+	
+	<button id="title" class="title"></button>
+
+	<hr class="hide">
+
+	<span id="imageSpan"></span>
+	<hr class="hide">
+
+	<span>
+		<button class="option" onclick="setmodel()">Change Model</button>
+		<button class="option" onclick="share()">Share Result</button>
+	</span>
+
+	<textarea class="input" maxlength="200" id="prompt" placeholder="Type Here"></textarea>
+	
+	<hr class="hide">
+
+	<button class="option" style="width:60vw;" onclick="run()">Generate</button>
+
+	<hr class="hide">
+	
+	<textarea class="response" id="response" readonly></textarea>
+
+	<hr class="hide">
+</body>
+<script type="text/javascript" src="/_embed_media/js/general.js"></script>
+<script>
+	var jsonid = undefined
+	var model = "smollm2"
+	var Loaded = 0
+	var LoadingDotCount = 0
+
+	function share() {
+		if (jsonid == undefined) {
+			alert('Enter a prompt first')
+		} else {
+			window.top.location.href = 'Share?id='+jsonid
+		}
+	}
+
+	function setmodel() {
+		const models = [
+			["smollm2", "Quick and lightweight"],
+			["llava", "Vivid Descriptions"],
+			["deepseek-llm", "Advanced Language"],
+			["wizard-math", "Math and Logic"]
+		]
+		for (x = 0; x < models.length; x++) {
+			if (models[x][0] == model) {
+				modelIndex = x
+			}
+		}
+		var message =
+			`Enter the number of the model to use
+
+Current Model: ${modelIndex+1} - ${model}\n`
+		for (x = 0; x < models.length; x++) {
+			message += `\n${x+1} - ${models[x][0]} - ${models[x][1]}`
+		}
+		var Prompt = prompt(message)
+		var result = models[Number(Prompt) - 1]
+		if (result == undefined && Prompt != null) {
+			alert('Invaild Input')
+			result = models[0]
+			setmodel()
+		}
+		window.model = result[0]
+	}
+
+	function run() {
+		var prompt = document.getElementById('prompt').value
+		if (prompt == "") { return alert('Prompt cannot be blank') }
+		window.Loaded = 1
+		document.getElementById('prompt').value = ''
+		document.getElementById('prompt').setAttribute('placeholder', prompt)
+		callAPI(`/Utilities/AI Chat/prompt`, {'username':data.Cookie.get('username'), 'auth':data.Cookie.get('auth'), 'prompt':prompt, 'model':model, 'chat':1}).then(t => {
+			//window.Loaded = 2
+			//window.response = t.response
+			//window.jsonid = t.id
+			document.getElementById('response').innerHTML = JSON.stringify(t)
+		})
+	}
+/*
+	setInterval(() => {
+		window.LoadingDotCount = {true:0, false:LoadingDotCount+1} [LoadingDotCount >= 4]
+		document.getElementById('response').innerHTML = { 0:'Awaiting Prompt ', 1:'Generating ', 2:response}[Loaded] + ['.', '..', '...', '....', '.....'][LoadingDotCount]
+	}, 300)*/
+</script>
+</html>

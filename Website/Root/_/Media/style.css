@@ -1,0 +1,16 @@
+
+#content {
+
+    font-size: xx-large;
+    padding: .4em 0.25em;
+    width: 60vw;
+    margin-bottom: 3%;
+
+    border: 2px solid black;
+    cursor: pointer;
+    color: white;
+    border-radius: 5px;
+    display: block;
+    background-color: rgb(0, 153, 255);
+
+}

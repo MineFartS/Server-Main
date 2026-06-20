@@ -1,0 +1,23 @@
+
+input[type="text"].form {
+    text-align: center;
+    font-size: 3em;
+    padding: .4em 0.25em;
+    background-color: rgb(228, 228, 228);
+    width: 75vw;
+    height: 60px;
+}
+
+input[type="radio"].form {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    background-color: red;
+    appearance: none;
+    border-radius: 50%;
+    vertical-align:-10px
+}
+
+input[type="radio"]:checked {
+    background-color: grey;
+}

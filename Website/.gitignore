@@ -1,0 +1,33 @@
+
+# Cache
+**/__pycache__/
+**/__pylogs__/
+
+# HTTPS Certificates
+Certificates/
+
+# User Web Shares
+/Root/Servers/FTP/User Web Shares/
+
+# Generated Index Files
+**/index.json
+/Root/_/Search/search.json
+
+# Archives
+*.iso
+*.zip
+*.exe
+
+# Videos
+*.mp4
+*.mov
+
+# Images
+*.webp
+*.png
+*.heic
+*.jpeg
+*.jpg
+
+# Misc
+*.psd

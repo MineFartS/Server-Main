@@ -1,0 +1,42 @@
+
+#refresh {
+    background-color: rgb(0, 153, 255);
+    border: 2px solid black;
+    color: black;
+    padding: 5px 5px;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: xx-large;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+#refresh:hover {
+    background-color: rgb(23, 129, 199);
+}
+
+#content {
+    font-size: xx-large;
+    padding: .4em 0.25em;
+    width: 60vw;
+    margin-bottom: 3%;
+
+    border: 2px solid black;
+    cursor: pointer;
+    color: white;
+    border-radius: 5px;
+    display: block;
+    background-color: rgb(0, 153, 255);
+}
+
+img, video {
+
+    max-width: 50vw;
+    max-height: 50vh;
+
+    object-fit: contain;
+
+}
