@@ -13,16 +13,8 @@ class World(Path):
     def __init__(self, name:str) -> None:
         super().__init__(f'E:/Minecraft/Worlds/{name}/')
 
-    def start(self) -> Start:
-        from .Files import files
-
-        #======================================================
-
-        for name, url in files.items():
-            url.cache(self.child(name))
-
-        #======================================================
-
+    def _start(self):
+        
         process = Start(
             args = [
                 java_exe, 
@@ -34,6 +26,20 @@ class World(Path):
         )
 
         PIDs[self.name] = process._process.pid
+
+        return process
+
+    def start(self) -> Start:
+        from .Files import files
+
+        #======================================================
+
+        for name, url in files.items():
+            url.cache(self.child(name))
+
+        #======================================================
+
+        process = self._start()
 
         #======================================================
         # GIT IGNORE
