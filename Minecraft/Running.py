@@ -1,17 +1,10 @@
-from philh_myftp_biz.process import SysTask
-from __init__ import Worlds, PIDs
+from .World import Worlds
+from . import Tasks
 
-for w in Worlds():
-
-    task = SysTask(PIDs[w.name])
-
-    if task.exists:
-
+for w in Worlds:
+    if Tasks[w.name].running:
         print('true')
-        
         break
 
-# If no worlds are running
-else:
-    
+else:    
     print('false')
