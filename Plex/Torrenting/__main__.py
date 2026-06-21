@@ -1,8 +1,7 @@
 from philh_myftp_biz.web.omdb import MediaNotFoundError
+from philh_myftp_biz.terminal import ParsedArgs, Log
 from . import qbit, VM, driver, PIDstore, Media
-from philh_myftp_biz.terminal import ParsedArgs
-from philh_myftp_biz.terminal import Log
-from .Scanner import Downloads
+from .Scanner import Missing
 from time import sleep
 from os import getpid
 
@@ -19,14 +18,12 @@ qbit.clear(rm_files=False)
 # ===============================================================
 # FIND MAGNETS
 
-downloads = Downloads()
-
 while True:
 
     try:
 
         # Get the next download from the generator
-        d = next(downloads)
+        d = next(Missing)
 
         # Start the download
         d.start()
@@ -65,7 +62,6 @@ while True:
 
         break
 
-    #
     except ConnectionAbortedError:
 
         Log.CRIT('', exc_info=True)

@@ -1,7 +1,7 @@
 from philh_myftp_biz.terminal import ParsedArgs
+from philh_myftp_biz.functools import singleton
 from philh_myftp_biz.text import contains
 from philh_myftp_biz.terminal import Log
-
 from typing import Generator, Literal
 from . import this, Media
 
@@ -30,8 +30,9 @@ def ReadName(
 
     return Title, Year
 
-def Downloads() -> Generator[Media.DOWNLOAD]:
-    """Generate a list of Movie and Episode Downloads"""
+@singleton
+def Missing() -> Generator[Media.DOWNLOAD]:
+    """Missing Movies and Episodes"""
 
     #==========================================================
     # MOVIES
