@@ -1,5 +1,5 @@
+from philh_myftp_biz.terminal import ParsedArgs, Log, ProgressBar
 from philh_myftp_biz.web.omdb import MediaNotFoundError
-from philh_myftp_biz.terminal import ParsedArgs, Log
 from . import qbit, VM, driver, PIDstore, Media
 from .Scanner import Missing
 from time import sleep
@@ -86,6 +86,8 @@ Log.INFO(f'Waiting for downloads: {len(queue)=}')
 # ===============================================================
 # MANAGE DOWNLOADS
 
+pbar = ProgressBar(queue, label='Torrents')
+
 # Loop until there are no downloads left
 while len(queue) > 0:
 
@@ -121,6 +123,8 @@ while len(queue) > 0:
 
                 # Run any media-specific final commands for the download
                 d.finish()
+
+                pbar.step()
 
                 # Stop downloading the file
                 d.file.stop()
