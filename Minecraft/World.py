@@ -1,7 +1,7 @@
 from philh_myftp_biz.web import FirewallException
 from philh_myftp_biz.classtools import singleton
 from philh_myftp_biz.process import Start
-from . import this, args, PIDs, java_exe
+from . import this, args, Tasks, java_exe
 from philh_myftp_biz.terminal import Log
 from philh_myftp_biz.json import Dict
 from philh_myftp_biz.file import INI
@@ -25,7 +25,7 @@ class World(Path):
             dir = self
         )
 
-        PIDs[self.name] = process._process.pid
+        Tasks[self.name] = process
 
         return process
 
