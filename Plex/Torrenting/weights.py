@@ -34,11 +34,15 @@ class WEIGHTS(dict[str, Any]):
 
     def TITLE(self,
         target: str, 
-        control: str|None
+        control: str|list[str]|None
     ) -> bool:
         
         if control is None:
             return True
+        
+        elif isinstance(control, list):
+            return any(self.TITLE(target, c) for c in control)
+        
         else:
             return (similarity(a=target, b=control) > .65)
 

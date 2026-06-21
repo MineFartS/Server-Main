@@ -254,7 +254,7 @@ class Episode(MediaItem):
         ]
 
         self.weights = WEIGHTS()
-        self.weights['TITLE'] = None
+        self.weights['TITLE'] = [self.show.Title, self.Title]
         self.weights['YEAR'] = self.show.Year
         self.weights['SEASON'] = int(self.season)
         self.weights['EPISODE'] = int(self)
