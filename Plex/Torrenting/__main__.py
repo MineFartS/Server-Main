@@ -43,6 +43,14 @@ while True:
         else:
 
             Log.VERB(f'Magnet Not Found: {d=}')
+    
+    # Continue the loop if the download has timed out
+    except TimeoutError:
+
+        Log.FAIL('', exc_info=True)
+
+        # Skip to the next download
+        continue
 
     except MediaNotFoundError:
         continue

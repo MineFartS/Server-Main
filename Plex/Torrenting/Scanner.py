@@ -86,7 +86,11 @@ def Missing() -> Generator[Media.DOWNLOAD]:
                 else:
 
                     # Attempt to start downloading the season
-                    season.start()
+                    try:
+                        season.start()
+                        
+                    except TimeoutError:
+                        Log.FAIL('', exc_info=True)
 
                     # Iter through all episodes in the season
                     for episode in season.episodes:
