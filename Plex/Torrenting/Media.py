@@ -29,37 +29,41 @@ class MediaItem:
     dir: Path
     """Parent Folder"""
 
+    @cached_property
+    def magnets(self):
+        mags = thePirateBay.search(*self.queries)
+        mags.filter(lambda m: self.valid(m.name))
+        mags.sort(lambda m: m.seeders)
+        return mags
+
     def start(self) -> None:
-        """Search thepiratebay.org and start the download"""
+        while len(self.magnets) > 0:
 
-        # Search thePirateBay for magnets
-        magnets: List[Magnet|Torrent] = thePirateBay.search(*self.queries)
+            # Select the most seeded magnet
+            self.magnet = self.magnets.pop()
 
-        # Get torrents already in the download queue
-        magnets.extend(qbit.queue)
+            # If a magnet has been found
+            if self.magnet:
 
-        # Remove magnets with invalid names
-        magnets.filter(lambda m: self.valid(m.name))
+                Log.VERB(
+                    f'Found: {self=}\n'+ \
+                    f'{self.magnet.name=}\n'+ \
+                    f'{self.magnet.seeders=}'
+                )
 
-        # Select the most seeded magnet
-        self.magnet = magnets.max(func=lambda m: m.seeders)
+                if not self.magnet.exists:
 
-        # If a magnet has been found
-        if self.magnet:
+                    # Download the magnet
+                    try:
+                        self.magnet.start()
+                    except TimeoutError as e:
+                        Log.WARN('', exc_info=True)
+                        continue
 
-            Log.VERB(
-                f'Found: {self=}\n'+ \
-                f'{self.magnet.name=}\n'+ \
-                f'{self.magnet.seeders=}'
-            )
+                    # Stop all files in the magnet
+                    [f.stop() for f in self.magnet.files]
 
-            if not self.magnet.exists:
-
-                # Download the magnet
-                self.magnet.start()
-
-                # Stop all files in the magnet
-                [f.stop() for f in self.magnet.files]
+                    return
 
     @property
     def exists(self) -> bool:
