@@ -22,6 +22,11 @@ args.Arg(
     desc = 'Select Specific World'
 )
 
+args.Flag(
+    name = 'force',
+    letter = 'f'
+)
+
 #============================================================
 
 PIDs: Dict[int] = Dict(JSON(this.child('/__pycache__/Tasks.json')))
