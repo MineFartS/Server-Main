@@ -29,41 +29,37 @@ class MediaItem:
     dir: Path
     """Parent Folder"""
 
-    @cached_property
-    def magnets(self):
-        mags = thePirateBay.search(*self.queries)
-        mags.filter(lambda m: self.valid(m.name))
-        mags.sort(lambda m: m.seeders)
-        return mags
-
     def start(self) -> None:
-        while len(self.magnets) > 0:
+        """Search thepiratebay.org and start the download"""
 
-            # Select the most seeded magnet
-            self.magnet = self.magnets.pop()
+        # Search thePirateBay for magnets
+        magnets: List[Magnet|Torrent] = thePirateBay.search(*self.queries)
 
-            # If a magnet has been found
-            if self.magnet:
+        # Get torrents already in the download queue
+        magnets.extend(qbit.queue)
 
-                Log.VERB(
-                    f'Found: {self=}\n'+ \
-                    f'{self.magnet.name=}\n'+ \
-                    f'{self.magnet.seeders=}'
-                )
+        # Remove magnets with invalid names
+        magnets.filter(lambda m: self.valid(m.name))
 
-                if not self.magnet.exists:
+        # Select the most seeded magnet
+        self.magnet = magnets.max(func=lambda m: m.seeders)
 
-                    # Download the magnet
-                    try:
-                        self.magnet.start()
-                    except TimeoutError as e:
-                        Log.WARN('', exc_info=True)
-                        continue
+        # If a magnet has been found
+        if self.magnet:
 
-                    # Stop all files in the magnet
-                    [f.stop() for f in self.magnet.files]
+            Log.VERB(
+                f'Found: {self=}\n'+ \
+                f'{self.magnet.name=}\n'+ \
+                f'{self.magnet.seeders=}'
+            )
 
-                    return
+            if not self.magnet.exists:
+
+                # Download the magnet
+                self.magnet.start()
+
+                # Stop all files in the magnet
+                [f.stop() for f in self.magnet.files]
 
     @property
     def exists(self) -> bool:
