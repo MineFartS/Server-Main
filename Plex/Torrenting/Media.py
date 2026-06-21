@@ -1,6 +1,7 @@
-from philh_myftp_biz.web.torrent import TorrentFile, Magnet, thePirateBay
+from philh_myftp_biz.web.torrent import Torrent, TorrentFile, Magnet, thePirateBay
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
 from philh_myftp_biz.classtools import loc, attr
+from philh_myftp_biz.json.List import List
 from philh_myftp_biz.terminal import Log
 from philh_myftp_biz.db import MimeType
 from functools import cached_property
@@ -8,7 +9,7 @@ from philh_myftp_biz.pc import Path
 from philh_myftp_biz import VERBOSE
 from .weights import WEIGHTS
 from typing import Callable
-from . import this
+from . import this, qbit
 
 class MediaItem:
 
@@ -31,8 +32,13 @@ class MediaItem:
     def start(self) -> None:
         """Search thepiratebay.org and start the download"""
 
-        magnets = thePirateBay.search(*self.queries)
+        # Search thePirateBay for magnets
+        magnets: List[Magnet|Torrent] = thePirateBay.search(*self.queries)
 
+        # Get torrents already in the download queue
+        magnets.extend(qbit.queue)
+
+        # Remove magnets with invalid names
         magnets.filter(lambda m: self.valid(m.name))
 
         # Select the most seeded magnet
@@ -43,7 +49,7 @@ class MediaItem:
 
             Log.VERB(
                 f'Found: {self=}\n'+ \
-                f'{self.magnet.title=}\n'+ \
+                f'{self.magnet.name=}\n'+ \
                 f'{self.magnet.seeders=}'
             )
 
