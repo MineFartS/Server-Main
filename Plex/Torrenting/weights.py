@@ -65,22 +65,25 @@ class WEIGHTS(dict[str, Any]):
         control: int|list[int]
     ) -> bool:
         
-        if sample is None:
-            return True
+        match (x.__class__.__name__ for x in (sample, control)):
         
-        elif isinstance(sample, list):
-            return (control in sample)
+            case 'list', 'int':
+                return self.TITLE(sample, [control])
+            
+            case 'list', 'list':
+                return any(c in sample for c in control)
         
-        else:
+            case 'int', 'int':
+                return abs(control - sample) < 2
         
-            if isinstance(control, int):
-                MIN = control-1
-                MAX = control+1
-            else:
-                MIN = control[0]-1
-                MAX = control[-1]+1
-
-            return (MIN <= sample <= MAX)
+            case 'int', 'list':
+                return sample in range(
+                    control[0]-1, 
+                    control[-1]+1
+                )
+            
+            case _:
+                return True
 
     def EPISODE(self,
         sample: int|list[int]|None, 
