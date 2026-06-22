@@ -5,7 +5,7 @@ from typing import Any
 
 class WEIGHTS(dict[str, Any]):
 
-    def parse(self, name: str):
+    def parse(self, name:str):
 
         parse = NameParser(name)
 
@@ -15,16 +15,16 @@ class WEIGHTS(dict[str, Any]):
 
         for key, control in self.items():
 
-            target = getattr(parse, key.lower())
+            sample = getattr(parse, key.lower())
 
             _valid = getattr(self, key)(
-                target = target,
+                sample = sample,
                 control = control
             )
 
             valid &= _valid
 
-            logm += f'\n{key}={_valid:d} | {target=} | {control=}'
+            logm += f'\n{key}={_valid:d} | {sample=} | {control=}'
 
         logm += f'\n{valid=}'
  
@@ -33,7 +33,7 @@ class WEIGHTS(dict[str, Any]):
         return valid
 
     def TITLE(self,
-        target: str, 
+        sample: str, 
         control: str|list[str]|None
     ) -> bool:
         
@@ -41,35 +41,35 @@ class WEIGHTS(dict[str, Any]):
             return True
         
         elif isinstance(control, list):
-            return any(self.TITLE(target, c) for c in control)
+            return any(self.TITLE(sample, c) for c in control)
         
         else:
-            return (similarity(a=target, b=control) > .65)
+            return (similarity(a=sample, b=control) > .65)
 
     def SEASON(self,
-        target: int|list[int]|None, 
+        sample: int|list[int]|None, 
         control: int
     ) -> bool:
         
-        if isinstance(target, int):
-            return (control == target)
+        if isinstance(sample, int):
+            return (control == sample)
 
-        elif isinstance(target, list):
-            return (control in target)
+        elif isinstance(sample, list):
+            return (control in sample)
         
         else:
             return False
         
     def YEAR(self,
-        target: int|list[int]|None, 
+        sample: int|list[int]|None, 
         control: int|list[int]
     ) -> bool:
         
-        if target is None:
+        if sample is None:
             return True
         
-        elif isinstance(target, list):
-            return (control in target)
+        elif isinstance(sample, list):
+            return (control in sample)
         
         else:
         
@@ -80,15 +80,25 @@ class WEIGHTS(dict[str, Any]):
                 MIN = control[0]-1
                 MAX = control[-1]+1
 
-            return (MIN <= target <= MAX)
+            return (MIN <= sample <= MAX)
 
     def EPISODE(self,
-        target: int|list[int]|None, 
+        sample: int|list[int]|None, 
         control: int|None
     ) -> bool:
         
-        if isinstance(target, list):
-            return (control == target[0])
+        if isinstance(sample, list):
+            sample = sample[0]
         
-        else:
-            return (control == target)
+        return (control == sample)
+        
+    def QUALITY(self,
+        sample: None|str,
+        control: None
+    ) -> bool:
+        
+        if sample is None:
+            return True
+        
+        return sample not in ['hdtv', 'tvrip'] 
+
