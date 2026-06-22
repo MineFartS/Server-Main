@@ -13,8 +13,6 @@ from . import this, qbit
 
 class MediaItem:
 
-    weights: WEIGHTS
-
     magnet: None|Magnet = None
 
     queries: list[str]
@@ -28,6 +26,12 @@ class MediaItem:
 
     dir: Path
     """Parent Folder"""
+
+    @cached_property
+    def weights(self):
+        w = WEIGHTS()
+        w['QUALITY'] = None
+        return w
 
     def start(self) -> None:
         """Search thepiratebay.org and start the download"""
@@ -136,7 +140,6 @@ class Movie(MediaItem):
             f'{title} {year}'
         ]
 
-        self.weights = WEIGHTS()
         self.weights['TITLE'] = self.Title
         self.weights['YEAR'] = self.Year
 
@@ -210,7 +213,6 @@ class Season(MediaItem):
         # List of 'Episode' OBJs
         self.episodes = [Episode(self, i[1]) for i in episodes.items()]
 
-        self.weights = WEIGHTS()
         self.weights['TITLE'] = self.show.Title
         self.weights['SEASON'] = int(self)
         self.weights['EPISODE'] = None
@@ -259,7 +261,6 @@ class Episode(MediaItem):
             f'{self.show.Title} {season}{self:02d}'
         ]
 
-        self.weights = WEIGHTS()
         self.weights['TITLE'] = [self.show.Title, self.Title]
         self.weights['YEAR'] = self.show.Year
         self.weights['SEASON'] = int(self.season)
