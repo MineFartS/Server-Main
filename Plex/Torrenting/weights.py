@@ -95,13 +95,3 @@ class WEIGHTS(dict[str, Any]):
         
         return (control == sample)
         
-    def QUALITY(self,
-        sample: None|str,
-        control: None
-    ) -> bool:
-        
-        if sample is None:
-            return True
-        
-        return sample not in ['hdtv', 'tvrip'] 
-

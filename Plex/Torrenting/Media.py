@@ -29,9 +29,7 @@ class MediaItem:
 
     @cached_property
     def weights(self):
-        w = WEIGHTS()
-        w['QUALITY'] = None
-        return w
+        return WEIGHTS()
 
     def start(self) -> None:
         """Search thepiratebay.org and start the download"""
