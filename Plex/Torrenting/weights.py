@@ -33,12 +33,15 @@ class WEIGHTS(dict[str, Any]):
         return valid
 
     def TITLE(self,
-        sample: str, 
+        sample: str|None, 
         control: str|list[str]|None
     ) -> bool:
         
         if control is None:
             return True
+        
+        elif sample is None:
+            return (None in control)
         
         elif isinstance(control, list):
             return any(self.TITLE(sample, c) for c in control)
