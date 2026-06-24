@@ -1,12 +1,10 @@
 from philh_myftp_biz.web.torrent import Torrent, TorrentFile, Magnet, thePirateBay
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
-from philh_myftp_biz.classtools import loc, attr
+from philh_myftp_biz.functools import loc, attr
 from philh_myftp_biz.json.List import List
 from philh_myftp_biz.terminal import Log
-from philh_myftp_biz.db import MimeType
 from functools import cached_property
 from philh_myftp_biz.pc import Path
-from philh_myftp_biz import VERBOSE
 from .weights import WEIGHTS
 from typing import Callable
 from . import this, qbit
@@ -28,14 +26,16 @@ class MediaItem:
     """Parent Folder"""
 
     @cached_property
-    def weights(self):
-        return WEIGHTS()
+    def weights(self) -> WEIGHTS:
+        w = WEIGHTS()
+        self.valid = w.parse
+        return w
 
     def start(self) -> None:
         """Search thepiratebay.org and start the download"""
 
         # Search thePirateBay for magnets
-        magnets: List[Magnet|Torrent] = thePirateBay.search(*self.queries)
+        magnets: List[Torrent] = thePirateBay.search(*self.queries)
 
         # Get torrents already in the download queue
         magnets.extend(qbit.queue)
@@ -44,9 +44,8 @@ class MediaItem:
         magnets.filter(lambda m: self.valid(m.name))
 
         # Select the most seeded magnet
-        self.magnet = magnets.max(func=lambda m: m.seeders)
+        self.magnet = magnets.max(lambda m: m.seeders)
 
-        # If a magnet has been found
         if self.magnet:
 
             Log.VERB(
@@ -56,67 +55,26 @@ class MediaItem:
             )
 
             if not self.magnet.exists:
+                try:
+                    self.magnet.start()
+                    self.magnet.wait()
+                    [f.stop() for f in self.magnet.files]
+                except TimeoutError:
+                    Log.FAIL('', exc_info=True)
 
-                # Download the magnet
-                self.magnet.start()
-
-                # Stop all files in the magnet
-                [f.stop() for f in self.magnet.files]
-
-    @property
+    @cached_property
     def exists(self) -> bool:
         """Check if the destination file already exists"""
-
-        VERBOSE.pause()
-
-        # Iter through all items in the folder
-        for p in self.dir.children:
-
-            # If the file has a valid name
-            if self.valid(p):
-
-                VERBOSE.resume()
-
-                return True
-            
-        VERBOSE.resume()
-            
-        return False
-
-    def valid(self,
-        item: str | Path
-    ) -> bool:
-        
-        if isinstance(item, str):
-            return self.weights.parse(item)
-        
-        else:
-
-            # If the mimetype of the file is 'video' or 'ignore'
-            TYPE = (MimeType.Path(item) in ['video', 'ignore'])
-
-            # If the name of the file is valid
-            NAME = self.weights.parse(item.name)
-
-            return (TYPE and NAME)
+        return any(
+            (self.valid(p.name) and p.type=='video') for p in self.dir.children
+        )
     
     @cached_property
     def file(self) -> TorrentFile | None:
-        """File Instance"""
-        
         if self.magnet:
-
-            files: list[TorrentFile] = list(filter(
-                lambda m: self.valid(m.path),
-                self.magnet.files
-            ))
-
-            if len(files) > 0:
-
-                return max(
-                    files,
-                    key = lambda m: m.size
-                )
+            files = self.magnet.files.copy()
+            files.filter(lambda m: self.valid(m.name))
+            return self.magnet.files.max(lambda f: f.size)
 
 class Movie(MediaItem):
 
@@ -124,14 +82,11 @@ class Movie(MediaItem):
 
     def __init__(self,
         title: str,
-        year: int,
-        todo: Path = None
+        year: int
     ) -> None:
         
         self.Title = title
         self.Year = year
-
-        self.__todo = todo
 
         self.queries = [
             title,
@@ -141,29 +96,19 @@ class Movie(MediaItem):
         self.weights['TITLE'] = self.Title
         self.weights['YEAR'] = self.Year
 
-    @property
-    def paths(self):
+    @cached_property
+    def paths(self) -> tuple[Path, Path]:
+        return (
+            self.file.path, 
+            this.child(f"/Media/Movies/{self.Title} ({self.Year}).{self.file.path.ext}")
+        )
 
-        # The source file
-        src = self.file.path
-
-        # The destination file path
-        dst = this.child(f"/Media/Movies/{self.Title} ({self.Year}).{src.ext}")
-
-        return src, dst
-
-    def finish(self):
-
-        # If a todo/placeholder file was passed during initialization
-        if self.__todo:
-
-            # Delete the placeholder file
-            self.__todo.delete()
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<Movie "{self.Title} ({self.Year})" @{loc(self)}>'
 
 class Show:
+
+    dir = this.child('/Media/Shows/')
 
     def __init__(self,
         title: str,
@@ -173,10 +118,9 @@ class Show:
         self.Title = title
         self.Year = year
 
-        self.dir = this.child(f"/Media/Shows/{title} ({year})/")
+        self.dir = Show.dir.child(f"/{title} ({year})/")
         """../Media/Shows/{Title} ({Year})/"""
 
-        # List of 'Season' OBJs
         self.seasons = [Season(self, *i) for i in Omdb.show(title, year).Seasons.items()]
 
     def __repr__(self) -> str:
@@ -194,21 +138,17 @@ class Season(MediaItem):
 
         attr(self, '__int__').set(lambda s: int(season))
 
-        # Destination File Directory
         self.dir = show.dir.child(f"/Season {self:02d}/")
         """E:/Plex/Media/Shows/{Show}/Season {Season}/"""
 
-        # Create the folder if it doesn't exist
         self.dir.mkdir()
 
-        # List of TPB queries
         self.queries = [
             f'{self.show.Title} Season {self}',
             f'{self.show.Title} s{self:02d}',
             f'{self.show.Title} s{self}',
         ]
 
-        # List of 'Episode' OBJs
         self.episodes = [Episode(self, i[1]) for i in episodes.items()]
 
         self.weights['TITLE'] = self.show.Title
@@ -216,18 +156,9 @@ class Season(MediaItem):
         self.weights['EPISODE'] = None
         self.weights['YEAR'] = self.show.Year
 
-    @property
+    @cached_property
     def exists(self) -> bool:
-        
-        # Iter through all episodes this season
-        for episode in self.episodes:
-
-            # If the episode does not exist
-            if not episode.exists:
-                
-                return False
-            
-        return True
+        return all(e.exists for e in self.episodes)
     
     def __format__(self, format_spec:str) -> str:
         return f'{int(self):{format_spec}}'
@@ -249,10 +180,8 @@ class Episode(MediaItem):
         self.dir = season.dir
         """E:/Plex/Media/Shows/{Show}/Season {Season}/"""
 
-        # Integer Function
         attr(self, '__int__').set(lambda s: episode.Number)
 
-        # List of TPB queries
         self.queries = [
             f'{self.show.Title} s{season:02d}e{self:02d}',
             f'{self.show.Title} {season:02d}x{self:02d}',
@@ -268,27 +197,20 @@ class Episode(MediaItem):
 
         self.magnet = self.season.magnet
 
-        # If no file was found in the season magnet
+        # Search again if no file was found in the season
         if self.file is None:
-
-            # Start downloading the episode
+            del self.file
             super().start()
 
-    @property
+    @cached_property
     def paths(self) -> tuple[Path, Path]:
-
-        # The source file
-        src = self.file.path
-        
-        # The destination file path
-        dst = self.dir.child(f'/Season {self.season:02d} Episode {self:02d}.{src.ext}')
-
-        return src, dst
+        return (
+            self.file.path,
+            self.dir.child(f'/Season {self.season:02d} Episode {self:02d}.{self.file.path.ext}')
+        )
     
     def __format__(self, format_spec:str) -> str:
         return f'{int(self):{format_spec}}'
     
     def __repr__(self) -> str:
         return f'<Episode "{self.season}x{self}" - "{self.show.Title}" @{loc(self)}>'
-
-type DOWNLOAD = Movie|Episode

@@ -2,109 +2,65 @@ from philh_myftp_biz.terminal import ParsedArgs
 from philh_myftp_biz.functools import singleton
 from philh_myftp_biz.text import contains
 from philh_myftp_biz.terminal import Log
-from typing import Generator, Literal
-from . import this, Media
+from typing import Generator
+from . import Media
 
 def _FILTER(name:str):
+    return (ParsedArgs['filter']=='') or contains.any(name, ParsedArgs['filter'])
 
-    if ParsedArgs['filter'] == '':
-        return True
-    else:
-        return contains.any(name, ParsedArgs['filter'])
-
-def ReadName(
-    name: Literal['Title (Year)']
-) -> tuple[str, int]:
-    """
-    Get Title and Year from file/folder name
-
-    EXAMPLE:
-    ReadName('Test (2025)') -> 'Test', 2025
-    """
-    
-    # Get title from directory name
-    Title = name.split(' (')[0]
-    
-    # Get year from directory name
-    Year = int(name.split('(')[1].split(')')[0])
-
-    return Title, Year
+def ReadName(name) -> tuple[str, int]:
+    """'Test (2025)' -> 'Test', 2025"""
+    return (
+        name.split(' (')[0],
+        int(name.split('(')[1].split(')')[0])
+    )
 
 @singleton
-def Missing() -> Generator[Media.DOWNLOAD]:
-    """Missing Movies and Episodes"""
+def Missing() -> Generator[Media.Movie|Media.Episode]:
 
     #==========================================================
-    # MOVIES
 
-    # Iter through all child directories of 'E:/Plex/Media/Movies/'
-    for p in this.child('/Media/Movies/').children:
+    for p in Media.Movie.dir.children:
 
-        FILTER = _FILTER(p.name)
-        TODO = (p.ext == 'todo')
+        if _FILTER(p.name) and (p.size == 0):
 
-        # If the file name matches the filter
-        if FILTER and TODO:
+            movie = Media.Movie(*ReadName(p.name))
 
-            movie = Media.Movie(*ReadName(p.name), p)
+            movie.finish = p.delete
 
-            # If the movie is already downloaded
             if movie.exists:
-
                 Log.INFO(f'Movie Exists\n{movie.Title=}\n{movie.Year=}')
-
-            # If the movie is missing
             else:
-
                 Log.WARN(f'Movie Missing\n{movie.Title=}\n{movie.Year=}')
-
                 yield movie
 
     #==========================================================
-    # EPISODES
 
-    # Iter through all child directories of 'E:/Plex/Media/Shows/'
-    for ShowDir in this.child('/Media/Shows/').children:
+    for ShowDir in Media.Show.dir.children:
 
-        # If the folder name matches the filter
-        if _FILTER(ShowDir.name):
+        if not _FILTER(ShowDir.name): 
+            continue
 
-            # Get Show from the filename 
-            show = Media.Show(*ReadName(ShowDir.name))
+        show = Media.Show(*ReadName(ShowDir.name))
 
-            Log.VERB(f'Scanning Show\n{show=}\n{ShowDir=}')
+        Log.VERB(f'Scanning Show\n{show=}\n{ShowDir=}')
 
-            # Iter through all seasons in the show
-            for season in show.seasons:
+        for season in show.seasons:
 
-                # If the season is already completely downloaded
-                if season.exists:
+            if season.exists:
+                Log.INFO(f'Season Exists\n{show=}\n{season=}')
+            
+            else:
+                
+                season.start()
 
-                    Log.INFO(f'Season Exists\n{show=}\n{season=}')
+                for episode in season.episodes:
 
-                # If the season is missing episodes
-                else:
+                    if episode.exists:
+                        Log.INFO(f'Episode Exists\n{show=}\n{season=}\n{episode=}')
 
-                    # Attempt to start downloading the season
-                    try:
-                        season.start()
-                        
-                    except TimeoutError:
-                        Log.FAIL('', exc_info=True)
-
-                    # Iter through all episodes in the season
-                    for episode in season.episodes:
-
-                        # If the episode is already downloaded
-                        if episode.exists:
-
-                            Log.INFO(f'Episode Exists\n{show=}\n{season=}\n{episode=}')
-
-                        # If the episode is missing
-                        else:
-
-                            Log.WARN(f'Episode Missing\n{show=}\n{season=}\n{episode=}')
-
-                            yield episode
+                    else:
+                        Log.WARN(f'Episode Missing\n{show=}\n{season=}\n{episode=}')
+                        yield episode
 
     #==========================================================

@@ -5,7 +5,7 @@ from typing import Any
 
 class WEIGHTS(dict[str, Any]):
 
-    def parse(self, name:str):
+    def parse(self, name:str) -> bool:
 
         parse = NameParser(name)
 
