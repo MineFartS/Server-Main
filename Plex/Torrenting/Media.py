@@ -46,7 +46,7 @@ class MediaItem:
         # Select the most seeded magnet
         self.magnet = magnets.max(lambda m: m.seeders)
 
-        if self.magnet:
+        if self.magnet != None:
 
             Log.VERB(
                 f'Found: {self=}\n'+ \
@@ -55,8 +55,9 @@ class MediaItem:
             )
 
             if not self.magnet.exists:
+
                 self.magnet = self.magnet.start()
-                self.magnet.wait()
+
                 [f.stop() for f in self.magnet.files]
 
     @cached_property
@@ -71,7 +72,7 @@ class MediaItem:
         if self.magnet:
             files = self.magnet.files.copy()
             files.filter(lambda m: self.valid(m.name))
-            return self.magnet.files.max(lambda f: f.size)
+            return files.max(lambda f: f.size)
 
 class Movie(MediaItem):
 
