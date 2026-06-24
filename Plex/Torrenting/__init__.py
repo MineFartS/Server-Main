@@ -48,7 +48,7 @@ Log.VERB(f"Discovering VM\nname='Torrenting'")
 
 while True:
     try: 
-        qbit = qBitTorrent(
+        qBitTorrent.connect(
             host = VM.cap('IP', 'Torrenting'),
             username = 'admin',
             password = 'Torrenting123!',
@@ -69,6 +69,5 @@ for pid in driver.Task.PIDs:
     PIDstore += f'firefox-{pid}'
 
 thePirateBay.driver = driver
-thePirateBay.qbit = qbit
 
 #==============================================
