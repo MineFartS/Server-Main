@@ -61,7 +61,7 @@ while len(queue) > 0:
     sleep(1)
 
     # Clear queue items that have nothing selected
-    qbit.clear(lambda t: len(t.selected_files)==0)
+    qbit.clear(True, lambda t: len(t.enabled_files)==0)
 
     # Sort queue by seeders (most seeded first)
     qbit.sort(lambda t: t.seeders)
