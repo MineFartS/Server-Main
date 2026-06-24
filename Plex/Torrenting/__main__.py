@@ -31,16 +31,12 @@ while True:
         else:
             Log.VERB(f'Magnet Not Found: {d=}')
 
-    except MediaNotFoundError:
+    except TimeoutError, MediaNotFoundError:
+        Log.FAIL('', exc_info=True)
         continue
 
-    # Break the loop if the generator is exhausted
-    except StopIteration:
-        Log.WARN('All Items Scanned')
-        break
-
-    except ConnectionAbortedError:
-        Log.CRIT('', exc_info=True)
+    except StopIteration, ConnectionAbortedError:
+        Log.WARN(exc_info=True)
         break
 
     # Break the loop if the queue limit has been reached
