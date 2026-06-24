@@ -52,7 +52,8 @@ def Missing() -> Generator[Media.Movie|Media.Episode]:
             
             else:
                 
-                season.start()
+                try: season.start()
+                except TimeoutError: Log.FAIL('', exc_info=True)
 
                 for episode in season.episodes:
 

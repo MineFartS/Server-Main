@@ -55,12 +55,9 @@ class MediaItem:
             )
 
             if not self.magnet.exists:
-                try:
-                    self.magnet.start()
-                    self.magnet.wait()
-                    [f.stop() for f in self.magnet.files]
-                except TimeoutError:
-                    Log.FAIL('', exc_info=True)
+                self.magnet.start()
+                self.magnet.wait()
+                [f.stop() for f in self.magnet.files]
 
     @cached_property
     def exists(self) -> bool:
