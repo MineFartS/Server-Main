@@ -1,4 +1,4 @@
-from philh_myftp_biz.web.torrent import Torrent, TorrentFile, Magnet, thePirateBay
+from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay, qBitTorrent
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
 from philh_myftp_biz.functools import loc, attr
 from philh_myftp_biz.json.List import List
@@ -7,11 +7,11 @@ from functools import cached_property
 from philh_myftp_biz.pc import Path
 from .weights import WEIGHTS
 from typing import Callable
-from . import this, qbit
+from . import this
 
 class MediaItem:
 
-    magnet: None|Magnet = None
+    magnet: None|Torrent = None
 
     queries: list[str]
     """List of queries for the pirate bay"""
@@ -38,7 +38,7 @@ class MediaItem:
         magnets: List[Torrent] = thePirateBay.search(*self.queries)
 
         # Get torrents already in the download queue
-        magnets.extend(qbit.queue)
+        magnets.extend(qBitTorrent.queue)
 
         # Remove magnets with invalid names
         magnets.filter(lambda m: self.valid(m.name))
@@ -55,7 +55,7 @@ class MediaItem:
             )
 
             if not self.magnet.exists:
-                self.magnet.start()
+                self.magnet = self.magnet.start()
                 self.magnet.wait()
                 [f.stop() for f in self.magnet.files]
 

@@ -1,6 +1,7 @@
 from philh_myftp_biz.terminal import ParsedArgs, Log, ProgressBar
 from philh_myftp_biz.web.omdb import MediaNotFoundError
-from . import qbit, VM, driver, PIDstore, Media
+from philh_myftp_biz.web.torrent import qBitTorrent
+from . import VM, driver, PIDstore, Media
 from .Scanner import Missing
 from time import sleep
 from os import getpid
@@ -9,7 +10,7 @@ from os import getpid
 
 queue: list[Media.Movie|Media.Episode] = []
 
-qbit.clear(rm_files=False)
+qBitTorrent.clear(rm_files=False)
 
 # ===============================================================
 
@@ -61,10 +62,10 @@ while len(queue) > 0:
     sleep(1)
 
     # Clear queue items that have nothing selected
-    qbit.clear(True, lambda t: len(t.enabled_files)==0)
+    qBitTorrent.clear(True, lambda t: len(t.enabled_files)==0)
 
     # Sort queue by seeders (most seeded first)
-    qbit.sort(lambda t: t.seeders)
+    qBitTorrent.sort(lambda t: t.seeders)
 
     for d in queue:
 
