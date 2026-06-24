@@ -37,17 +37,10 @@ class WEIGHTS(dict[str, Any]):
         control: str|list[str]|None
     ) -> bool:
         
-        if control is None:
-            return True
-        
-        elif sample is None:
-            return (None in control)
-        
-        elif isinstance(control, list):
-            return any(self.TITLE(sample, c) for c in control)
-        
-        else:
-            return (similarity(a=sample, b=control) > .65)
+        if not isinstance(control, list):
+            control = [control]
+
+        return any(similarity(sample, c)>.65 for c in control)
 
     def SEASON(self,
         sample: int|list[int]|None, 
