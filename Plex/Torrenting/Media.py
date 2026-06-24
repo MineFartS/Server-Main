@@ -63,7 +63,7 @@ class MediaItem:
     def exists(self) -> bool:
         """Check if the destination file already exists"""
         return any(
-            (self.valid(p.name) and p.type=='video') for p in self.dir.children
+            (self.valid(p.name) and p.size>0) for p in self.dir.children
         )
     
     @cached_property
@@ -141,9 +141,12 @@ class Season(MediaItem):
         self.dir.mkdir()
 
         self.queries = [
+            self.show.Title,
+            f'{self.show.Title} {self.show.Year}',
             f'{self.show.Title} Season {self}',
             f'{self.show.Title} s{self:02d}',
             f'{self.show.Title} s{self}',
+            f'{self.show.Title} {self}',
         ]
 
         self.episodes = [Episode(self, i[1]) for i in episodes.items()]
