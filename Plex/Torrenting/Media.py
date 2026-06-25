@@ -91,7 +91,7 @@ class Movie(MediaItem):
             f'{title} {year}'
         ]
 
-        self.weights['TITLE'] = self.Title
+        self.weights['TITLE'] = [self.Title]
         self.weights['YEAR'] = self.Year
 
     @cached_property
@@ -152,7 +152,7 @@ class Season(MediaItem):
 
         self.episodes = [Episode(self, i[1]) for i in episodes.items()]
 
-        self.weights['TITLE'] = self.show.Title
+        self.weights['TITLE'] = [self.show.Title]
         self.weights['SEASON'] = int(self)
         self.weights['EPISODE'] = None
         self.weights['YEAR'] = self.show.Year
