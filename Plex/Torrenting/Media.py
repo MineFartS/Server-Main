@@ -83,14 +83,16 @@ class MediaItem(dict[str, Any]):
 
     dir: Path
     """Parent Folder"""
-   
+
     def start(self) -> None:
 
-        # Search thePirateBay for magnets
-        magnets: List[Torrent] = thePirateBay.search(*self.queries)
+        # Search the download queue
+        self._start( qBitTorrent.queue )
 
-        # Get torrents already in the download queue
-        magnets.extend(qBitTorrent.queue)
+        if self.magnet is None: # Search thePirateBay
+            self._start( thePirateBay.search(*self.queries) )
+   
+    def _start(self, magnets:List[Torrent]) -> None:
 
         # Remove magnets with invalid names
         magnets.filter(lambda m: self.parse(m.name))
