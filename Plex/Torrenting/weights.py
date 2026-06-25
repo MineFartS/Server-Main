@@ -33,61 +33,29 @@ class WEIGHTS(dict[str, Any]):
         return valid
 
     def TITLE(self,
-        sample: str|None, 
-        control: str|list[str]|None
+        sample: str | None,
+        control: list[str|None]
     ) -> bool:
-        
-        if not isinstance(control, list):
-            control = [control]
-
         return any(similarity(sample, c)>.65 for c in control)
 
     def SEASON(self,
-        sample: int|list[int]|None, 
+        sample: list[int], 
         control: int
     ) -> bool:
-        
-        if isinstance(sample, int):
-            return (control == sample)
-
-        elif isinstance(sample, list):
-            return (control in sample)
-        
-        else:
-            return False
+        return (control in sample)
         
     def YEAR(self,
-        sample: int|list[int]|None, 
-        control: int|list[int]
+        sample: list[int], 
+        control: int
     ) -> bool:
-        
-        match (x.__class__.__name__ for x in (sample, control)):
-        
-            case 'list', 'int':
-                return self.TITLE(sample, [control])
-            
-            case 'list', 'list':
-                return any(c in sample for c in control)
-        
-            case 'int', 'int':
-                return abs(control - sample) < 2
-        
-            case 'int', 'list':
-                return sample in range(
-                    control[0]-1, 
-                    control[-1]+1
-                )
-            
-            case _:
-                return True
+        return (len(sample) == 0) or (control in sample)
 
     def EPISODE(self,
-        sample: int|list[int]|None, 
-        control: int|None
+        sample: list[int], 
+        control: int | None
     ) -> bool:
-        
-        if isinstance(sample, list):
-            sample = sample[0]
-        
-        return (control == sample)
-        
+        if len(sample) > 0:
+            return control == sample[0]
+        else:
+            return control is None
+
