@@ -1,5 +1,12 @@
+
 [submodule "Minecraft/.java"]
 	path = Minecraft/.java
 	url = https://github.com/MineFartS/JDK
 	branch = 25
     ignore = all
+
+[submodule "Plex/DBRepair"]
+	path = Plex/DBRepair
+	url = https://github.com/ChuckPa/DBRepair
+    ignore = all
+    
