@@ -89,7 +89,8 @@ while len(queue) > 0:
 
                 queue.remove(d)
 
-            except FileNotFoundError, OSError:
+            except FileNotFoundError, OSError, TypeError:
+                Log.WARN(exc_info=True)
                 d.magnet.recheck()
 
         elif d.magnet.errored:
