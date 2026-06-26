@@ -7,7 +7,7 @@ from os import getpid
 
 #=======================================================================
 
-FirewallException('Uvicorn').set(8000)
+#FirewallException('Uvicorn').set(8000)
 
 PIDstore.save([getpid()])
 
