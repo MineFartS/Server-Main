@@ -4,20 +4,11 @@ Movies = Path('E:/Plex/Media/Movies/')
 Shows = Movies.sibling('/Shows/')
 
 for f in Movies.children:
-
-    if f.ext != 'todo':
-
-        print(f)
-
-        todo = Movies.child(f.name + '.todo')
-
-        todo.open('w').close()
-
-        f.delete()
+    f.open('w').close()
 
 for f in Shows.descendants:
 
-    if f.is_file:
+    if f.is_file and not f.in_use:
 
         print(f)
 
