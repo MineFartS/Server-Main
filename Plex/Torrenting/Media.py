@@ -110,7 +110,7 @@ class MediaItem(dict[str, Any]):
 
             if not self.magnet.exists:
 
-                self.magnet = self.magnet.start()
+                self.magnet.start()
 
                 [f.stop() for f in self.magnet.files]
 
