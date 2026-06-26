@@ -55,7 +55,7 @@ while True:
             timeout = Args['timeout']
         )
         break
-    except JSONDecodeError: 
+    except JSONDecodeError, ConnectionError: 
         pass
 
 #==============================================
