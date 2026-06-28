@@ -4,6 +4,7 @@ enabled: true
 watch_files: []
 
 packages: [
+  'philh_myftp_biz --ignore-requires-python',
   'ollama',
   'diffusers',
   'transformers',
