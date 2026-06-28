@@ -1,10 +1,5 @@
-#===================================================
-# HOST
 
-setx OLLAMA_HOST "0.0.0.0:11434" /M
-
-#===================================================
-# FIREWALL
+git.exe submodule update --init --recursive --remote
 
 $rule = Get-NetFirewallRule `
     -DisplayName 'Ollama' `
@@ -21,28 +16,3 @@ if ($null -eq $rule) {
         -Verbose
 
 }
-
-#===================================================
-# DATA DIR
-
-$SRC = "E:\AI\Ollama\data\"
-
-$DST = "C:\Users\$env:username\.ollama\"
-
-New-Item `
-    -Path $SRC `
-    -ItemType Directory `
-    -ErrorAction SilentlyContinue `
-    -Verbose
-
-Remove-item `
-    -Path $DST `
-    -Force -Recurse -Verbose
-
-New-Item `
-    -Path $DST `
-    -ItemType Junction `
-    -Target $SRC `
-    -Verbose
-
-#===================================================
