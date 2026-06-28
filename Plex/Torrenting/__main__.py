@@ -32,7 +32,7 @@ while True:
         else:
             Log.VERB(f'Magnet Not Found: {d=}')
 
-    except TimeoutError, MediaNotFoundError:
+    except TimeoutError, MediaNotFoundError, ValueError:
         Log.FAIL('', exc_info=True)
         continue
 
