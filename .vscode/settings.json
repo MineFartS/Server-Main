@@ -1,0 +1,16 @@
+{
+    "files.exclude": {
+        "__temp__": true,
+        ".vscode": true,
+        "**/__pycache__": true,
+        "$RECYCLE.BIN": true,
+        "AI/Ollama/.app": true,
+        "AI/StableDiffusion/.venv": true,
+        "Minecraft/.java": true,
+        "Minecraft/Worlds": true,
+        "Plex/Media": true,
+        "Plex/Plex Media Server": true,
+        "System Volume Information": true,
+        "Users/philh": true
+    }
+}
