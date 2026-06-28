@@ -3,10 +3,12 @@
 Set Shell = WScript.CreateObject("WScript.Shell")
 
 ' CD to the script directory
-Shell.CurrentDirectory = UCase(Left(Wscript.ScriptFullName, Len(Wscript.ScriptFullName) - Len(Wscript.ScriptName) - 1))
+Shell.CurrentDirectory = "E:\AI\Ollama\"
 
 ' Run (and wait for) CreateLink.ps1
 Shell.run "Powershell -File Configure.ps1", 0, 1
 
+Shell.CurrentDirectory = "E:\AI\Ollama\.app\"
+
 ' Start Ollama Service
-Shell.run "ollama serve", 0, 0
+Shell.run "OllamaPortable serve", 0, 0
