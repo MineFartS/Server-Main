@@ -4,7 +4,9 @@ enabled: true
 watch_files: []
 
 packages: [
-  'philh_myftp_biz --ignore-requires-python',
+  'hatchling', 
+  'hatch-requirements-txt',
+  'git+https://github.com/MineFartS/Server-PythonPackage --ignore-requires-python --no-build-isolation',
   'ollama',
   'diffusers',
   'transformers',

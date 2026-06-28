@@ -2,7 +2,9 @@
 
 set py=%~dp0.venv\python.exe
 
-%py% -m pip install philh_myftp_biz --ignore-requires-python
+%py% -m pip install hatchling hatch-requirements-txt
+
+%py% -m pip install git+https://github.com/MineFartS/Server-PythonPackage --ignore-requires-python --no-build-isolation
 
 %py% -m pip install ollama diffusers transformers accelerate
 
