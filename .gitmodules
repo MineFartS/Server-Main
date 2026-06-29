@@ -19,6 +19,6 @@
 [submodule "AI/.venv"]
 	path = AI/.venv
 	url = https://github.com/MineFartS/Python-Embed
-	branch = 3.11.9
+	branch = 3.12.10
     ignore = all
 
