@@ -3,10 +3,10 @@ set_package('E:/AI/')
 
 from philh_myftp_biz.num import nearest_multiple
 from diffusers import StableDiffusionPipeline
-from philh_myftp_biz.file import temp, PKL
-from philh_myftp_biz.text import hex
+from philh_myftp_biz.file import temp
 from philh_myftp_biz.pc import Path
-from . import args, messages, this
+from . import args, messages
+from psutil import Process
 from torch import float16
 
 # ====================================================
@@ -39,36 +39,19 @@ args.Arg(
 # ====================================================
 # PIPELINE
 
-pipePKL = PKL(temp(
-    name = hex.encode(args['model']),
-    ext = 'pkl',
-    id = '0'
-))
+# Restrict to 2 cores
+Process().cpu_affinity([0, 1])
 
-# If the pipeline is pickled
-if pipePKL.path.exists:
+pipeline = StableDiffusionPipeline.from_pretrained(
+    pretrained_model_name_or_path = args['model'],
+    torch_dtype = float16,
+    cache_dir = 'E:/AI/__pycache__/',
+    safety_checker = None,
+    low_cpu_mem_usage = True
+)
 
-    # Return the pickled pipeline
-    pipeline: StableDiffusionPipeline = pipePKL.read()
+pipeline.vae.enable_slicing()
 
-# If the pipeline is not pickled
-else:
-
-    # Load the pipeline
-    pipeline = StableDiffusionPipeline.from_pretrained(
-        pretrained_model_name_or_path = args['model'],
-        torch_dtype = float16,
-        cache_dir = this.child('/StableDiffusion/data/').path,
-        safety_checker = None,
-        low_cpu_mem_usage = True
-    )
-
-    pipeline.enable_attention_slicing()
-
-    # Pickle the pipeline
-    pipePKL.save(pipeline)
-
-# Move the pipeline to the GPU
 pipeline.to("cuda")
 
 # ====================================================
