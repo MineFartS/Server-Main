@@ -1,7 +1,10 @@
+from philh_myftp_biz.terminal import set_package
+set_package('E:/AI/')
+
 from philh_myftp_biz.modules import Service
 from ollama import pull, chat, ChatResponse
 from philh_myftp_biz.terminal import Log
-from __init__ import args, messages
+from . import args, messages
 from typing import Iterator
 
 OllamaServ = Service('E:/AI/Ollama/')

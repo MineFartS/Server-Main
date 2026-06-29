@@ -1,9 +1,12 @@
+from philh_myftp_biz.terminal import set_package
+set_package('E:/AI/')
+
 from philh_myftp_biz.num import nearest_multiple
 from diffusers import StableDiffusionPipeline
 from philh_myftp_biz.file import temp, PKL
-from __init__ import args, messages, this
-from philh_myftp_biz.pc import Path
 from philh_myftp_biz.text import hex
+from philh_myftp_biz.pc import Path
+from . import args, messages, this
 from torch import float16
 
 # ====================================================
