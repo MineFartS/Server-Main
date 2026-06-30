@@ -1,0 +1,32 @@
+textarea {
+    text-align: center;
+    font-size: 3em;
+    padding: .4em 0.25em;
+    cursor: pointer;
+    color: black;
+    background-color: rgb(228, 228, 228);
+    border: 2px solid black;
+    border-radius: 5px;
+    resize: none;
+}
+
+textarea.input {
+    width: 60vw;
+    height: 3em;
+}
+
+textarea.response {
+    text-align: left;
+    width: 80vw;
+    height: 10em;
+
+}
+
+h1.stamp {
+    font-size: 1em;
+    font-weight: 50;
+}
+
+p1.response {
+    font-size: 2em;
+}
