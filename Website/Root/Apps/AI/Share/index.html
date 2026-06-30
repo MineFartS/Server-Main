@@ -1,93 +1,42 @@
-<!DOCTYPE html><html>
-<title>Share</title>
-<link rel="icon" type="image/x-icon" href="/_embed_media/favicon.ico">
-<link rel="stylesheet" href="/_embed_media/css/general.css">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<style>
-	button.option {
-		font-size: 2em;
-		line-height: 0;
-		text-align: center;
-		cursor: pointer;
-		background-color: transparent;
-		color: black;
-		border: solid;
-		border-radius: 5px;
-		height: 1.5em;
-	}
-
-	textarea {
-		text-align: center;
-		font-size: 3em;
-		padding: .4em 0.25em;
-		cursor: pointer;
-		color: black;
-		background-color: rgb(228, 228, 228);
-		border: 2px solid black;
-		border-radius: 5px;
-		resize: none;
- 	}
-
-	textarea.input {
-		width: 60vw;
-		height:3em;
-	}
-
-	textarea.response {
-		text-align: left;
-		width: 80vw;
-		height:10em;
-
-	}
-
-	h1.stamp {
-		font-size: 1em;
-		font-weight: 50;
-	}
-
-	p1.response {
-		font-size: 2em;
-	}
-</style>
-<body>
-	<hr class="hide">
-
-	<button id="back" class="back">Back</button>
-
-	<hr class="hide">
+<!DOCTYPE html>
+<html>
 	
-	<button id="title" class="title"></button>
+	<head>
 
-	<hr class="hide">
+		<title>AI</title>
+		
+		<link rel="icon" type="image/x-icon" href="/_/main.ico">
+		<link rel="stylesheet" href="/_/main.css">
+		<link rel="stylesheet" href="../style.css">
 
-	<span id="imageSpan"></span>
+	</head>	
 
-	<hr class="hide">
+	<body>
 
-	<h1 class="stamp" id="1">User: </h1>
-	<h1 class="stamp" id="2">Model: </h1>
-	<h1 class="stamp" id="3"></h1>
+		<a class="back" id="back" href="..">{Back}</a>
 
-	<textarea class="input" id="prompt" maxlength="200"></textarea>
+		<a class="title" id="title">{Title}</a>
 
-	<hr class="hide">
-	
-	<textarea class="response" id="response" readonly></textarea>
+        <span id="imageSpan"></span>
 
-	<hr class="hide">
-	<hr class="show">
+        <hr class="hide">
 
-</body>
-<script type="text/javascript" src="/_embed_media/js/general.js"></script>
-<script>
-	fetch(`responses/${data.Param.get('id')}.json`).then(r => r.json()).then(t => {
-		document.getElementById('prompt').value = t.prompt
-		document.getElementById('response').innerHTML = t.response
-		var created = new Date(t.created * 1000)
+        <h1 class="stamp" id="1">User: </h1>
+        <h1 class="stamp" id="2">Model: </h1>
+        <h1 class="stamp" id="3"></h1>
 
-		document.getElementById('1').innerHTML += t.username
-		document.getElementById('2').innerHTML += t.model
-		document.getElementById('3').innerHTML += `${created.toLocaleDateString()} at ${created.toLocaleTimeString()}`
-	})
-</script>
+        <textarea class="input" id="prompt" maxlength="200"></textarea>
+
+        <hr class="hide">
+        
+        <textarea class="response" id="response" readonly></textarea>
+
+        <hr class="hide">
+        <hr class="show">
+
+    </body>
+
+	<script src="/_/main.js"></script>
+	<script src="script.js"></script>
+
 </html>
