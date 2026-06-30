@@ -260,6 +260,13 @@ class Episode(MediaItem):
             del self.file
             super().start()
 
+        if self.file:
+            for e in NameParser(self.file.name).episode:
+                if e > int(self):
+                    f = self.dir.child(f'/Season {self.season:02d} Episode {e:02d}.ignore').open('w')
+                    f.write('1')
+                    f.close()
+
     @cached_property
     def paths(self) -> tuple[Path, Path]:
         return (
