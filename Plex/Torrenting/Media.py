@@ -91,6 +91,9 @@ class MediaItem(dict[str, Any]):
 
         if self.magnet is None: # Search thePirateBay
             self._start( thePirateBay.search(*self.queries) )
+
+        if self.magnet:
+            del self.magnet.seeders
    
     def _start(self, magnets:List[Torrent]) -> None:
 
@@ -123,7 +126,7 @@ class MediaItem(dict[str, Any]):
     
     @cached_property
     def file(self) -> TorrentFile | None:
-        if self.magnet:
+        if self.magnet and (self.magnet.seeders > 0):
             files = self.magnet.files.copy()
             files.filter(lambda m: self.parse(m.name))
             return files.max(lambda f: f.size)
