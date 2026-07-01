@@ -20,8 +20,6 @@ while True:
 
         d = next(Missing)
 
-        d.start()
-
         if d.file:
 
             Log.INFO(f'Downloading File: {d=}')

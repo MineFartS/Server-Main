@@ -1,4 +1,5 @@
-from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay, qBitTorrent, NameParser
+from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay, NameParser
+from philh_myftp_biz.web.torrent import qBitTorrent as qbit
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
 from philh_myftp_biz.functools import loc, attr
 from philh_myftp_biz.text import similarity
@@ -84,39 +85,6 @@ class MediaItem(dict[str, Any]):
     dir: Path
     """Parent Folder"""
 
-    def start(self) -> None:
-
-        # Search the download queue
-        self._start( qBitTorrent.queue )
-
-        if self.magnet is None: # Search thePirateBay
-            self._start( thePirateBay.search(*self.queries) )
-
-        if self.magnet:
-            del self.magnet.seeders
-   
-    def _start(self, magnets:List[Torrent]) -> None:
-
-        # Remove magnets with invalid names
-        magnets.filter(lambda m: self.parse(m.name))
-
-        # Select the most seeded magnet
-        self.magnet = magnets.max(lambda m: m.seeders)
-
-        if self.magnet != None:
-
-            Log.VERB(
-                f'Found: {self=}\n'+ \
-                f'{self.magnet.name=}\n'+ \
-                f'{self.magnet.seeders=}'
-            )
-
-            if not self.magnet.exists:
-
-                self.magnet.start()
-
-                [f.stop() for f in self.magnet.files]
-
     @cached_property
     def exists(self) -> bool:
         """Check if the destination file already exists"""
@@ -126,9 +94,28 @@ class MediaItem(dict[str, Any]):
     
     @cached_property
     def file(self) -> TorrentFile | None:
-        if self.magnet and (self.magnet.seeders > 0):
+
+        filter_func = lambda m: self.parse(m.name)
+        
+        if self.magnet is None:
+
+            magnets = qbit.queue.filtered(filter_func)
+
+            if len(magnets) == 0:
+                results = thePirateBay.search(*self.queries)
+                results.filter(filter_func)
+                magnets.extend(results)
+
+            self.magnet = magnets.max(lambda m: m.seeders)
+
+        if self.magnet:
+
+            self.magnet.start()
+            [f.stop() for f in self.magnet.files]
+            del self.magnet.seeders
+
             files = self.magnet.files.copy()
-            files.filter(lambda m: self.parse(m.name))
+            files.filter(filter_func)
             return files.max(lambda f: f.size)
 
 class Movie(MediaItem):
@@ -230,6 +217,8 @@ class Episode(MediaItem):
         season: 'Season',
         episode: EpisodeData
     ) -> None:
+        
+        super().__init__()
 
         self.show: Show = season.show
         self.season: Season = season
@@ -251,21 +240,16 @@ class Episode(MediaItem):
         self['SEASON'] = int(self.season)
         self['EPISODE'] = int(self)
 
-    def start(self) -> None:
+    @cached_property
+    def file(self):
 
         self.magnet = self.season.magnet
-
-        # Search again if no file was found in the season
-        if self.file is None:
-            del self.file
-            super().start()
-
-        if self.file:
-            for e in NameParser(self.file.name).episode:
-                if e > int(self):
-                    f = self.dir.child(f'/Season {self.season:02d} Episode {e:02d}.ignore').open('w')
-                    f.write('1')
-                    f.close()
+        if super().file:
+            return super().file
+        
+        del super().__dict__['file']
+        self.magnet = None
+        return super().file
 
     @cached_property
     def paths(self) -> tuple[Path, Path]:
