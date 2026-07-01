@@ -3,4 +3,6 @@ enabled: true
 
 watch_files: []
 
-packages: []
+packages: [
+  'plexapi'
+]
