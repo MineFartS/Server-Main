@@ -1,0 +1,18 @@
+{
+
+    "version": "0.2.0",
+
+    "configurations": [
+        {
+            "name": "Python: Current File as Module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "${fileDirnameBasename}.${fileBasenameNoExtension}",
+            "cwd": "${fileDirname}/..",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}",
+            "justMyCode": true
+        }
+    ]
+
+}
