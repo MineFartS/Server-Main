@@ -4,6 +4,7 @@
         ".vscode": true,
         "**/__pycache__": true,
         "$RECYCLE.BIN": true,
+        "AI/.venv": true,
         "AI/Ollama/.app": true,
         "AI/StableDiffusion/.venv": true,
         "Minecraft/.java": true,
