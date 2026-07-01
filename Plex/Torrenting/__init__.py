@@ -23,7 +23,7 @@ Args.Arg(
     name = 'filter',
     default = '',
     desc = 'Only download items whose title contains this',
-    handler = lambda x: x.split('|')
+    handler = str
 )
 
 Args.Arg(

@@ -1,49 +1,41 @@
 from philh_myftp_biz.terminal import ParsedArgs
 from philh_myftp_biz.functools import singleton
-from philh_myftp_biz.text import contains
 from philh_myftp_biz.terminal import Log
-from typing import Generator
-from . import Media
+from typing import Generator, Type
+from . import Media, this
 
-def _FILTER(name:str):
-    return (ParsedArgs['filter']=='') or contains.any(name, ParsedArgs['filter'])
+def get[T](dir, clazz:Type[T]):
 
-def ReadName(name) -> tuple[str, int]:
-    """'Test (2025)' -> 'Test', 2025"""
-    return (
-        name.split(' (')[0],
-        int(name.split('(')[1].split(')')[0])
-    )
+    for c in this.child(f'/Media/{dir}/').children:
 
-@singleton
-def Missing() -> Generator[Media.Movie|Media.Episode]:
-
-    #==========================================================
-
-    for p in Media.Movie.dir.children:
-
-        if _FILTER(p.name) and (p.size == 0):
-
-            movie = Media.Movie(*ReadName(p.name))
-
-            movie.finish = p.delete
-
-            if movie.exists:
-                Log.INFO(f'Movie Exists\n{movie.Title=}\n{movie.Year=}')
-            else:
-                Log.WARN(f'Movie Missing\n{movie.Title=}\n{movie.Year=}')
-                yield movie
-
-    #==========================================================
-
-    for ShowDir in Media.Show.dir.children:
-
-        if not _FILTER(ShowDir.name): 
+        if ParsedArgs['filter'] not in c.name:
             continue
 
-        show = Media.Show(*ReadName(ShowDir.name))
+        name = c.name.split(' (')[0]
+        
+        year = int(c.name.split('(')[1].split(')')[0])
 
-        Log.VERB(f'Scanning Show\n{show=}\n{ShowDir=}')
+        yield c, clazz(name, year)
+
+@singleton
+def Missing() -> Generator[Media.Movie | Media.Episode]:
+
+    #==========================================================
+
+    for c, movie in get('Movies', Media.Movie):
+
+        if movie.exists:
+            Log.INFO(f'Movie Exists\n{movie.Title=}\n{movie.Year=}')
+        else:
+            Log.WARN(f'Movie Missing\n{movie.Title=}\n{movie.Year=}')
+            movie.finish = c.delete
+            yield movie
+
+    #==========================================================
+
+    for c, show in get('Shows', Media.Show):
+
+        Log.VERB(f'Scanning Show\n{show=}')
 
         for season in show.seasons:
 
@@ -51,9 +43,11 @@ def Missing() -> Generator[Media.Movie|Media.Episode]:
                 Log.INFO(f'Season Exists\n{show=}\n{season=}')
             
             else:
-                
-                try: season.file
-                except TimeoutError: Log.FAIL('', exc_info=True)
+
+                try:
+                    season.file
+                except TimeoutError:
+                    Log.FAIL('', exc_info=True)
 
                 for episode in season.episodes:
 
