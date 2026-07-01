@@ -55,7 +55,11 @@ Log.INFO(f'Waiting for downloads: {len(queue)=}')
 
 # ===============================================================
 
-pbar = ProgressBar(queue, label='Torrents')
+pbar = ProgressBar(
+    queue, 
+    mode = 'FCOUNTER',
+    label = 'Torrents'
+)
 
 while len(queue) > 0:
 
