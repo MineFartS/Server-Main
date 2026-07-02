@@ -1,5 +1,6 @@
 from philh_myftp_biz.terminal import ParsedArgs
 from philh_myftp_biz.functools import singleton
+from philh_myftp_biz.text import contains
 from philh_myftp_biz.terminal import Log
 from typing import Generator, Type
 from . import Media, this
@@ -8,7 +9,7 @@ def get[T](dir, clazz:Type[T]):
 
     for c in this.child(f'/Media/{dir}/').children:
 
-        if ParsedArgs['filter'] not in c.name:
+        if not contains.any(c.name, ParsedArgs['filter']):
             continue
 
         name = c.name.split(' (')[0]
