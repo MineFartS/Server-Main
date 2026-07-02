@@ -24,7 +24,6 @@ while True:
 
             Log.INFO(f'Downloading File: {d=}')
 
-            d.file.start()
             queue += [d]
 
         else:

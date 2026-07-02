@@ -110,13 +110,17 @@ class MediaItem(dict[str, Any]):
 
         if self.magnet:
 
-            self.magnet.start()
-            [f.stop() for f in self.magnet.files]
-            del self.magnet.seeders
+            if not self.magnet.exists:
+                self.magnet.start()
+                [f.stop() for f in self.magnet.files]
+                del self.magnet.seeders
 
             files = self.magnet.files.copy()
             files.filter(filter_func)
-            return files.max(lambda f: f.size)
+            
+            if (file := files.max(lambda f: f.size)):
+                file.start()
+                return file
 
 class Movie(MediaItem):
 
@@ -244,11 +248,7 @@ class Episode(MediaItem):
     def file(self):
 
         self.magnet = self.season.magnet
-        if super().file:
-            return super().file
         
-        del super().__dict__['file']
-        self.magnet = None
         return super().file
 
     @cached_property
