@@ -7,7 +7,25 @@
 # Plex Media
 /Media/*
 !/Media/purge.py
-Plex Media Server
+
+# Lockfile
+/__lock__.ig
+
+#==============================================================
+# Add Databases
+
+!/Plex Media Server
+/Plex Media Server/*
+
+!/Plex Media Server/Plug-in Support
+/Plex Media Server/Plug-in Support/*
+
+!/Plex Media Server/Plug-in Support/Databases/
+/Plex Media Server/Plug-in Support/Databases/*
+
+!/Plex Media Server/Plug-in Support/Databases/TEMPLATE_com.plexapp.plugins.library.db
+
+#==============================================================
 
 # WinTV Activation Code
 /WinTV/Activation Code.txt
