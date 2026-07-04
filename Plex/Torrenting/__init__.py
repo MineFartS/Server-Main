@@ -21,9 +21,9 @@ PIDstore.save([f'python-{getpid()}'])
 
 Args.Arg(
     name = 'filter',
-    default = '',
+    default = [''],
     desc = 'Only download items whose title contains this',
-    handler = lambda x: x.split(',') or ['']
+    handler = lambda x: x.split(',')
 )
 
 Args.Arg(
