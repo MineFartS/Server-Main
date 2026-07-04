@@ -92,10 +92,7 @@ while len(queue) > 0:
 
             except FileNotFoundError, OSError, TypeError:
                 Log.WARN(exc_info=True)
-                if d.magnet:
-                    d.magnet.recheck()
-                else:
-                    queue.remove(d)
+                d.magnet and d.magnet.start()
 
         elif d.magnet.errored:
             d.magnet.start()
