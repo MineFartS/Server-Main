@@ -173,7 +173,10 @@ class Show:
         self.dir = Show.dir.child(f"/{title} ({year})/")
         """../Media/Shows/{Title} ({Year})/"""
 
-        self.seasons = [Season(self, *i) for i in Omdb.show(title, year).Seasons.items()]
+        try:
+            self.seasons = [Season(self, *i) for i in Omdb.show(title, year).Seasons.items()]
+        except NameError:
+            self.seasons = []
 
     @cached_property
     def exists(self) -> bool:

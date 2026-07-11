@@ -21,9 +21,6 @@ while len(queue) < Args['limit']:
             queue += [d]
             Log.INFO(f'Downloading File: {d=}')
 
-    except TimeoutError, NameError, ValueError:
-        Log.WARN(exc_info=True)
-
     except StopIteration, ConnectionAbortedError:
         Log.WARN(exc_info=True)
         break
