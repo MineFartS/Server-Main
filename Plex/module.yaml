@@ -4,5 +4,8 @@ enabled: true
 watch_files: []
 
 packages: [
-  'plexapi'
+  'plexapi',
+  'ffmpeg_progress_yield',
+  'pymediainfo',
+  'opencv-python'
 ]
