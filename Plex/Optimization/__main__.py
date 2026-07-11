@@ -1,18 +1,20 @@
 from ffmpeg_progress_yield import FfmpegProgress
 from philh_myftp_biz.programs import FFMPEG
 from philh_myftp_biz.terminal import Log
+from philh_myftp_biz.terminal import Args
 from philh_myftp_biz.file import temp
 from philh_myftp_biz.pc import Path
 from tqdm import tqdm
 
 pbar = tqdm(
-    total = 100,
     position = 1,
+    total = Args['limit'],
     desc = "Encoding"
 )
 
 for src in Path('E:/Plex/Media/').descendants:
 
+    if pbar.finished: break
     if (src.type != 'video') or (src.ext == 'mp4'): continue
 
     dst = src.with_ext('mp4')
