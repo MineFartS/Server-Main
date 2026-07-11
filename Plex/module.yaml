@@ -4,6 +4,5 @@ enabled: true
 watch_files: []
 
 packages: [
-  'plexapi',
-  'ffmpeg_progress_yield'
+  'plexapi'
 ]
