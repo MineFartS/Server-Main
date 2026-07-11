@@ -3,10 +3,10 @@ from philh_myftp_biz.web.torrent import qBitTorrent as qbit
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
 from philh_myftp_biz.functools import loc, attr
 from philh_myftp_biz.text import similarity
-from philh_myftp_biz.json.List import List
 from philh_myftp_biz.terminal import Log
 from functools import cached_property
 from philh_myftp_biz.pc import Path
+from philh_myftp_biz import VERBOSE
 from typing import Callable, Any
 from . import this
 
@@ -85,8 +85,7 @@ class MediaItem(dict[str, Any]):
     dir: Path
     """Parent Folder"""
 
-    @cached_property
-    def exists(self) -> bool:
+    def _exists(self) -> bool:
         """Check if the destination file already exists"""
         return any(
             (self.parse(p.name) and p.size>0) for p in self.dir.children
@@ -111,8 +110,13 @@ class MediaItem(dict[str, Any]):
         if self.magnet:
 
             if not self.magnet.exists:
+                
                 self.magnet.start()
+
+                VERBOSE.pause()
                 [f.stop() for f in self.magnet.files]
+                VERBOSE.resume()
+
                 del self.magnet.seeders
 
             files = self.magnet.files.copy()
@@ -148,6 +152,8 @@ class Movie(MediaItem):
             self.file.path, 
             this.child(f"/Media/Movies/{self.Title} ({self.Year}).{self.file.path.ext}")
         )
+    
+    exists = cached_property(lambda s: s._exists())
 
     def __repr__(self) -> str:
         return f'<Movie "{self.Title} ({self.Year})" @{loc(self)}>'
@@ -168,6 +174,10 @@ class Show:
         """../Media/Shows/{Title} ({Year})/"""
 
         self.seasons = [Season(self, *i) for i in Omdb.show(title, year).Seasons.items()]
+
+    @cached_property
+    def exists(self) -> bool:
+        return all(s.exists for s in self.seasons)
 
     def __repr__(self) -> str:
         return f'<Show "{self.Title}" @{loc(self)}>'
@@ -258,6 +268,8 @@ class Episode(MediaItem):
             self.dir.child(f'/Season {self.season:02d} Episode {self:02d}.{self.file.path.ext}')
         )
     
+    exists = cached_property(lambda s: s._exists())
+
     def __format__(self, format_spec:str) -> str:
         return f'{int(self):{format_spec}}'
     

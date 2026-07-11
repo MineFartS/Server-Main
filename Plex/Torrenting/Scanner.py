@@ -1,62 +1,48 @@
-from philh_myftp_biz.terminal import ParsedArgs
 from philh_myftp_biz.functools import singleton
+from philh_myftp_biz.terminal import Args
 from philh_myftp_biz.text import contains
 from philh_myftp_biz.terminal import Log
+from philh_myftp_biz.pc import Path
 from typing import Generator, Type
-from . import Media, this
+from . import Media
 
-def get[T](dir, clazz:Type[T]):
+def children[T](dir, clazz:Type[T]):
 
-    for c in this.child(f'/Media/{dir}/').children:
+    for path in Path(f'E:/Plex/Media/{dir}/').children:
 
-        if not contains.any(c.name, ParsedArgs['filter']):
-            continue
+        if contains.any(path.name, Args['filter']):
 
-        name = c.name.split(' (')[0]
-        
-        year = int(c.name.split('(')[1].split(')')[0])
+            item = clazz(
+                title = path.name.split(' (')[0],
+                year = int(path.name.split('(')[1].split(')')[0])
+            )
 
-        yield c, clazz(name, year)
+            if path.is_file:
+                item.finish = path.delete
+
+            yield item
+
+def notexists[T](items:list[T]) -> filter[T]:
+    return filter(lambda e: not e.exists, items)
 
 @singleton
 def Missing() -> Generator[Media.Movie | Media.Episode]:
 
     #==========================================================
 
-    for c, movie in get('Movies', Media.Movie):
-
-        if movie.exists:
-            Log.INFO(f'Movie Exists\n{movie.Title=}\n{movie.Year=}')
-        else:
-            Log.WARN(f'Movie Missing\n{movie.Title=}\n{movie.Year=}')
-            movie.finish = c.delete
-            yield movie
+    yield from notexists(children('Movies', Media.Movie))
 
     #==========================================================
 
-    for c, show in get('Shows', Media.Show):
+    for show in notexists(children('Shows', Media.Show)):
 
-        Log.VERB(f'Scanning Show\n{show=}')
+        for season in notexists(show.seasons):
 
-        for season in show.seasons:
+            try:
+                season.file
+            except TimeoutError:
+                Log.FAIL(exc_info=True)
 
-            if season.exists:
-                Log.INFO(f'Season Exists\n{show=}\n{season=}')
-            
-            else:
-
-                try:
-                    season.file
-                except TimeoutError:
-                    Log.FAIL('', exc_info=True)
-
-                for episode in season.episodes:
-
-                    if episode.exists:
-                        Log.INFO(f'Episode Exists\n{show=}\n{season=}\n{episode=}')
-
-                    else:
-                        Log.WARN(f'Episode Missing\n{show=}\n{season=}\n{episode=}')
-                        yield episode
+            yield from notexists(season.episodes)
 
     #==========================================================
