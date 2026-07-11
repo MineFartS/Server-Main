@@ -5,7 +5,5 @@ watch_files: []
 
 packages: [
   'plexapi',
-  'ffmpeg_progress_yield',
-  'pymediainfo',
-  'opencv-python'
+  'ffmpeg_progress_yield'
 ]
