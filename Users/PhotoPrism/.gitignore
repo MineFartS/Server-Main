@@ -11,3 +11,4 @@ mysql
 !/data
 /data/*
 !/data/config
+/data/config/hub.yml
