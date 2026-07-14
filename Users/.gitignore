@@ -1,6 +1,10 @@
 
 **/__pycache__/
 
-philh/
+!/philh
+/philh/*
+!/philh/Administrator
+/philh/Administrator/*
+!/philh/Administrator/link.bat
 
 Backup/config.yaml
