@@ -50,17 +50,16 @@ for p in root.descendants:
     # If the path is a media file
     if p.type in ['image', 'video', 'audio']:
 
-        # Get the file extension
-        ext = p.ext.lower()
+        p.clear_exif()
 
-        if ext not in rules:
+        if p.ext not in rules:
 
-            Log.VERB(f'Appending IIS Rewrite Rule: {ext=}')
+            Log.VERB(f'Appending IIS Rewrite Rule: {p.ext=}')
 
             # Add a rule to the list
-            rules[ext] = f"""
-                        <rule name="Open '{ext}' in Media Viewer" stopProcessing="true">
-                            <match url="^(.+)\\.{ext}$" />
+            rules[p.ext] = f"""
+                        <rule name="Open '{p.ext}' in Media Viewer" stopProcessing="true">
+                            <match url="^(.+)\\.{p.ext}$" />
                             <action type="Rewrite" url="/_/Media/" appendQueryString="false" />
                             <conditions>
                                 <add input="{{QUERY_STRING}}" pattern="raw=true" negate="true" />
