@@ -121,6 +121,7 @@ class MediaItem(dict[str, Any]):
 
             files = self.magnet.files.copy()
             files.filter(filter_func)
+            files.filter(lambda f: f.path.type == 'video')
             
             if (file := files.max(lambda f: f.size)):
                 file.start()
