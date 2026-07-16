@@ -1,28 +1,28 @@
-
-# Force Verbose Mode
-import sys
-sys.argv += ['-v']
-
 from philh_myftp_biz.web.ftp import FTPPath
+from philh_myftp_biz.pc import Path, loc
 from philh_myftp_biz.web.ftp import FTP
-from philh_myftp_biz.file import YAML
-from philh_myftp_biz.pc import Path
-from philh_myftp_biz.pc import loc
+from philh_myftp_biz import VERBOSE
+from philh_myftp_biz.db import Ring
 from typing import Generator
 from os import getpid
+
+VERBOSE.enable()
 
 # Store PID
 with loc.cache.child('PID.txt').open('w') as f:
     f.write(str(getpid()))
 
-# Read configuration
-config = YAML(loc.script.child('config.yaml')).read()
+ring = Ring('FTP Backup Service')
+password = ring.Key('Admin Password')
+
+if password.read() is None:
+    password.prompt(secure=True)
 
 # Connect to the FTP server
 ftp = FTP(
     host = 'philh.myftp.biz',
     username = 'Administrator',
-    password = config['password']
+    password = password.read()
 )
 
 class PathPair:
