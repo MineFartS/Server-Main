@@ -1,5 +1,5 @@
 from philh_myftp_biz.web import FirewallException
-from philh_myftp_biz.classtools import singleton
+from philh_myftp_biz.functools import singleton
 from philh_myftp_biz.process import Start
 from . import this, args, Tasks, java_exe
 from philh_myftp_biz.terminal import Log

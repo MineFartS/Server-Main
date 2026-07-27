@@ -1,7 +1,7 @@
 from philh_myftp_biz.file import JSON, temp
 from philh_myftp_biz.modules import Module
 from philh_myftp_biz.text import random
-from philh_myftp_biz.array import List
+from philh_myftp_biz.json import List
 from fastapi import UploadFile, Form
 from philh_myftp_biz.pc import Path
 from philh_myftp_biz.db import Ring

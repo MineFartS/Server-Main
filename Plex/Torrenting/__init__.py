@@ -5,7 +5,7 @@ from philh_myftp_biz.modules import Module
 from philh_myftp_biz.terminal import Args
 from philh_myftp_biz.terminal import Log
 from json.decoder import JSONDecodeError
-from philh_myftp_biz.array import List
+from philh_myftp_biz.json import List
 from philh_myftp_biz.file import JSON
 from os import getpid
 
