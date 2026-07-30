@@ -2,11 +2,12 @@
 // Previous Search Term
 let lterm = ''
 
+getTerm = () => e.search.value.toLowerCase().trim()
+
 // Loop every 100 ms
 setInterval(() => {
 
-	// Current Search Term
-    let term = e.search.value.toLowerCase()
+    var term = getTerm()
 
     // If Search Term has changed
     if (term != lterm) {
@@ -19,6 +20,8 @@ setInterval(() => {
 
         // Call 'omdbapi.com'
         fetch(`https://www.omdbapi.com/?apikey=97f79170&s=${term}`).then(r => r.json()).then(t => {
+
+            if (getTerm() != term) return;
 
             // If a response is given
             if (t.Response == 'True') {
