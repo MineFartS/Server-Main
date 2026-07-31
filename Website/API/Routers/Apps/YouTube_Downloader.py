@@ -1,8 +1,8 @@
 from philh_myftp_biz.programs import COOKIES, FFMPEG
 from fastapi.responses import FileResponse
-from philh_myftp_biz.db import MimeType
+from philh_myftp_biz.db import MIMETYPES
 from philh_myftp_biz.file import temp
-from requests import get, head
+from philh_myftp_biz.web import URL
 from fastapi import APIRouter
 from yt_dlp import YoutubeDL
 
@@ -22,7 +22,7 @@ class DownloadItem:
 
         self.ext:  str = ext
         self.id:   str = id
-        self.type: str = MimeType.Ext(ext)
+        self.type: str = MIMETYPES[ext]
         
         #==========================
 
@@ -47,7 +47,7 @@ class DownloadItem:
         #==========================
 
     @property
-    def thumb_url(self) -> None|str:
+    def thumb_url(self) -> None|URL:
         
         reslist = [
             'maxresdefault',
@@ -58,28 +58,23 @@ class DownloadItem:
 
         for res in reslist:
 
-            url = f"https://img.youtube.com/vi/{self.id}/{res}.jpg"
-
-            r = head(url, allow_redirects=True)
-    
-            if r.status_code < 400:
-
+            url = URL(f"https://img.youtube.com/vi/{self.id}/{res}.jpg")
+ 
+            if url.exists:
                 return url
 
     def download(self) -> None:
 
         if self.type in ['video', 'audio']:
-
-            YoutubeDL(self.ytdl_args).download([self.watch_url])
+            dl = YoutubeDL(self.ytdl_args)
+            dl.download([self.watch_url])
+            dl.close()
 
         elif self.type in ['image']:
-
-            content: bytes = get(self.thumb_url).content
-
-            self.outfile.open('wb').write(content)
+            URL(self.thumb_url).download(self.outfile)
 
 @router.get('/video')
-async def read_item(id:str) -> str:
+async def _(id:str) -> str:
 
     dwnld = DownloadItem('mp4', id)
 
@@ -94,7 +89,7 @@ async def read_item(id:str) -> str:
     return dwnld.seg
 
 @router.get('/audio')
-async def read_item(id:str) -> str:
+async def _(id:str) -> str:
     
     dwnld = DownloadItem('mp3', id)
 
@@ -113,7 +108,7 @@ async def read_item(id:str) -> str:
     return dwnld.seg + '.mp3'
 
 @router.get('/thumbnail')
-async def read_item(id:str) -> str:
+async def _(id:str) -> str:
     
     dwnld = DownloadItem('jpg', id)
     
@@ -122,7 +117,7 @@ async def read_item(id:str) -> str:
     return dwnld.seg
 
 @router.get('/file')
-async def read_item(name:str):
+async def _(name:str):
     return FileResponse(
         path = f'E:/__temp__/{name}',
         filename = name
