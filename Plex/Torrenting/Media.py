@@ -116,7 +116,7 @@ class Show:
 
         try:
             self.seasons = [Season(self, *i) for i in Omdb.show(title, year).Seasons.items()]
-        except NameError:
+        except IndexError:
             self.seasons = []
 
     @cached_property
