@@ -86,10 +86,12 @@ class Movie(MediaItem):
             f'{title} {year}'
         ]
 
+        self.omdb = Omdb.movie(title, year)
 
         self.weights = Weights(
             TITLE = [self.Title],
             YEAR = self.Year,
+            UPLOADED = self.omdb.Released
         )
 
     @cached_property
@@ -119,8 +121,10 @@ class Show:
         self.dir = Show.dir.child(f"/{title} ({year})/")
         """../Media/Shows/{Title} ({Year})/"""
 
+        self.omdb = Omdb.show(title, year)
+
         try:
-            self.seasons = [Season(self, *i) for i in Omdb.show(title, year).Seasons.items()]
+            self.seasons = [Season(self, *i) for i in self.omdb.Seasons.items()]
         except IndexError:
             self.seasons = []
 
@@ -163,7 +167,8 @@ class Season(MediaItem):
             TITLE = [self.show.Title],
             SEASON = int(self),
             EPISODE = None,
-            YEAR = self.show.Year
+            YEAR = self.show.Year,
+            UPLOADED = show.omdb.Released
         )
 
     @cached_property
@@ -204,7 +209,8 @@ class Episode(MediaItem):
             TITLE = [self.show.Title, self.Title, None],
             YEAR = self.show.Year,
             SEASON = int(self.season),
-            EPISODE = int(self)
+            EPISODE = int(self),
+            UPLOADED = self.show.omdb.Released
         )
 
     @cached_property
