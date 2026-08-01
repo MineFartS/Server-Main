@@ -1,10 +1,12 @@
-from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay, Weights
+from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay
 from philh_myftp_biz.web.torrent import qBitTorrent as qbit
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
 from philh_myftp_biz.functools import loc, attr
 from functools import cached_property
+from philh_myftp_biz.json import List
 from philh_myftp_biz.pc import Path
 from philh_myftp_biz import VERBOSE
+from .weights import Weights
 from typing import Callable
 from . import this
 
@@ -29,7 +31,7 @@ class MediaItem:
     def _exists(self) -> bool:
         """Check if the destination file already exists"""
         return any(
-            (self.weights.parse(p.name) and p.size>0) for p in self.dir.children
+            (self.weights(p) and p.size>0) for p in self.dir.children
         )
     
     @cached_property
@@ -37,12 +39,12 @@ class MediaItem:
         
         if self.magnet is None:
 
-            magnets = qbit.queue.filtered(lambda m: self.weights.parse(m.name))
+            magnets = qbit.queue.filtered(self.weights)
 
             if len(magnets) == 0:
                 magnets.extend(thePirateBay.search(
                     *self.queries,
-                    weights = self.weights
+                    filter_func = self.weights
                 ))
 
             self.magnet = magnets.max(lambda m: m.seeders)
@@ -60,7 +62,8 @@ class MediaItem:
                 del self.magnet.seeders
 
             files = self.magnet.files.copy()
-            files.filter(lambda f: self.weights.parse(f.name) and f.path.type=='video')
+            files.filter(self.weights)
+            files.filter(lambda f: f.path.type=='video')
             
             if (file := files.max(lambda f: f.size)):
                 file.start()
@@ -83,9 +86,11 @@ class Movie(MediaItem):
             f'{title} {year}'
         ]
 
-        self.weights = Weights()
-        self.weights['TITLE'] = [self.Title]
-        self.weights['YEAR'] = self.Year
+
+        self.weights = Weights(
+            TITLE = [self.Title],
+            YEAR = self.Year,
+        )
 
     @cached_property
     def paths(self) -> tuple[Path, Path]:
@@ -154,11 +159,12 @@ class Season(MediaItem):
 
         self.episodes = [Episode(self, i[1]) for i in episodes.items()]
 
-        self.weights = Weights()
-        self.weights['TITLE'] = [self.show.Title]
-        self.weights['SEASON'] = int(self)
-        self.weights['EPISODE'] = None
-        self.weights['YEAR'] = self.show.Year
+        self.weights = Weights(
+            TITLE = [self.show.Title],
+            SEASON = int(self),
+            EPISODE = None,
+            YEAR = self.show.Year
+        )
 
     @cached_property
     def exists(self) -> bool:
@@ -194,11 +200,12 @@ class Episode(MediaItem):
             f'{self.show.Title} {season}{self:02d}'
         ]
 
-        self.weights = Weights()
-        self.weights['TITLE'] = [self.show.Title, self.Title, None]
-        self.weights['YEAR'] = self.show.Year
-        self.weights['SEASON'] = int(self.season)
-        self.weights['EPISODE'] = int(self)
+        self.weights = Weights(
+            TITLE = [self.show.Title, self.Title, None],
+            YEAR = self.show.Year,
+            SEASON = int(self.season),
+            EPISODE = int(self)
+        )
 
     @cached_property
     def file(self):
