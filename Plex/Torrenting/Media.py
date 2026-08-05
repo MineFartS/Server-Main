@@ -28,7 +28,8 @@ class MediaItem:
 
     weights: Weights
 
-    def _exists(self) -> bool:
+    @property
+    def exists(self) -> bool:
         """Check if the destination file already exists"""
         return any(
             (self.weights(p) and p.size>0) for p in self.dir.children
@@ -39,15 +40,15 @@ class MediaItem:
         
         if self.magnet is None:
 
-            magnets = qbit.queue.filtered(self.weights)
+            magnets = qbit.queue.copy()
 
             if len(magnets) == 0:
-                magnets.extend(thePirateBay.search(
-                    *self.queries,
-                    filter_func = self.weights
-                ))
+                results = thePirateBay.search(*self.queries)
+                results.sort(lambda m: -m.seeders)
+                magnets.extend(results)
 
-            self.magnet = magnets.max(lambda m: m.seeders)
+            magnets.filter(self.weights)
+            self.magnet = next(magnets, None)
 
         if self.magnet:
 
@@ -101,8 +102,6 @@ class Movie(MediaItem):
             this.child(f"/Media/Movies/{self.Title} ({self.Year}).{self.file.path.ext}")
         )
     
-    exists = cached_property(lambda s: s._exists())
-
     def __repr__(self) -> str:
         return f'<Movie "{self.Title} ({self.Year})" @{loc(self)}>'
 
@@ -128,7 +127,7 @@ class Show:
         except IndexError:
             self.seasons = []
 
-    @cached_property
+    @property
     def exists(self) -> bool:
         return all(s.exists for s in self.seasons)
 
@@ -171,7 +170,7 @@ class Season(MediaItem):
             UPLOADED = show.omdb.Released
         )
 
-    @cached_property
+    @property
     def exists(self) -> bool:
         return all(e.exists for e in self.episodes)
     
@@ -200,6 +199,8 @@ class Episode(MediaItem):
         attr(self, '__int__').set(lambda s: episode.Number)
 
         self.queries = [
+            self.show.Title,
+            *self.season.queries,
             f'{self.show.Title} s{season:02d}e{self:02d}',
             f'{self.show.Title} {season:02d}x{self:02d}',
             f'{self.show.Title} {season}{self:02d}'
@@ -227,8 +228,6 @@ class Episode(MediaItem):
             self.dir.child(f'/Season {self.season:02d} Episode {self:02d}.{self.file.path.ext}')
         )
     
-    exists = cached_property(lambda s: s._exists())
-
     def __format__(self, format_spec:str) -> str:
         return f'{int(self):{format_spec}}'
     
