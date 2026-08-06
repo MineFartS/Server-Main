@@ -1,8 +1,8 @@
 from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay
+from philh_myftp_biz.functools import loc, attr, cached_property
 from philh_myftp_biz.web.torrent import qBitTorrent as qbit
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
-from philh_myftp_biz.functools import loc, attr
-from functools import cached_property
+from philh_myftp_biz.terminal import Log
 from philh_myftp_biz.json import List
 from philh_myftp_biz.pc import Path
 from philh_myftp_biz import VERBOSE
@@ -11,8 +11,6 @@ from typing import Callable
 from . import this
 
 class MediaItem:
-
-    magnet: None|Torrent = None
 
     queries: list[str]
     """List of queries for the pirate bay"""
@@ -34,39 +32,56 @@ class MediaItem:
         return any(
             (self.weights(p) and p.size>0) for p in self.dir.children
         )
+
+    @cached_property    
+    def _magnets(self) -> list[Torrent]:
+
+        magnets = qbit.queue.filtered(self.weights)
+
+        if len(magnets) == 0:
+            magnets = List(filter(
+                self.weights,
+                thePirateBay.search(*self.queries)
+            ))
+        
+        magnets.sort(lambda m: m.seeders)
+        
+        return list(magnets.pop(n=3))
+
+    @cached_property
+    def magnet(self) -> Torrent | None:
+
+        if len(self._magnets) == 0:
+            return
+
+        mag = self._magnets.pop()
+        mag.start()
+
+        try:
+            VERBOSE.pause()
+            [f.stop() for f in mag.files]
+            return mag
+        except TimeoutError:
+            mag.stop()
+            return None
+        finally:
+            VERBOSE.resume()
     
     @cached_property
     def file(self) -> TorrentFile | None:
-        
-        if self.magnet is None:
 
-            magnets = qbit.queue.copy()
-
-            if len(magnets) == 0:
-                results = thePirateBay.search(*self.queries)
-                results.sort(lambda m: -m.seeders)
-                magnets.extend(results)
-
-            magnets.filter(self.weights)
-            self.magnet = next(magnets, None)
+        while self._magnets and (self.magnet is None):
+            del self.magnet
 
         if self.magnet:
-
-            if not self.magnet.exists:
-                
-                self.magnet.start()
-
-                VERBOSE.pause()
-                [f.stop() for f in self.magnet.files]
-                VERBOSE.resume()
-
-                del self.magnet.seeders
 
             files = self.magnet.files.copy()
             files.filter(self.weights)
             files.filter(lambda f: f.path.type=='video')
+
+            file = files.max(lambda f: f.size)
             
-            if (file := files.max(lambda f: f.size)):
+            if file is not None:
                 file.start()
                 return file
 
