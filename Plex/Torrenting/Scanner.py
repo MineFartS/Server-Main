@@ -37,12 +37,7 @@ def Missing() -> Generator[Media.Movie | Media.Episode]:
     for show in notexists(children('Shows', Media.Show)):
 
         for season in notexists(show.seasons):
-
-            try:
-                season.file
-            except TimeoutError:
-                Log.FAIL(exc_info=True)
-
+            season.start()
             yield from notexists(season.episodes)
 
     #==========================================================

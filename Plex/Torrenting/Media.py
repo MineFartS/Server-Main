@@ -2,12 +2,10 @@ from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay
 from philh_myftp_biz.functools import loc, attr, cached_property
 from philh_myftp_biz.web.torrent import qBitTorrent as qbit
 from philh_myftp_biz.web.omdb import EpisodeData, Omdb
-from philh_myftp_biz.terminal import Log
-from philh_myftp_biz.json import List
+from typing import Callable, Iterable
 from philh_myftp_biz.pc import Path
 from philh_myftp_biz import VERBOSE
 from .weights import Weights
-from typing import Callable
 from . import this
 
 class MediaItem:
@@ -25,6 +23,8 @@ class MediaItem:
     """Parent Folder"""
 
     weights: Weights
+    magnet: None|Torrent = None
+    file: None|TorrentFile = None
 
     @property
     def exists(self) -> bool:
@@ -33,57 +33,47 @@ class MediaItem:
             (self.weights(p) and p.size>0) for p in self.dir.children
         )
 
-    @cached_property    
-    def _magnets(self) -> list[Torrent]:
+    def _start(self, 
+        do_filter: bool, 
+        get_magnets: Callable[..., Iterable[Torrent]]
+    ) -> None:
 
-        magnets = qbit.queue.filtered(self.weights)
-
-        if len(magnets) == 0:
-            magnets = List(filter(
-                self.weights,
-                thePirateBay.search(*self.queries)
-            ))
-        
-        magnets.sort(lambda m: m.seeders)
-        
-        return list(magnets.pop(n=3))
-
-    @cached_property
-    def magnet(self) -> Torrent | None:
-
-        if len(self._magnets) == 0:
+        if self.magnet is not None:
             return
 
-        mag = self._magnets.pop()
-        mag.start()
+        magnets = get_magnets()
 
-        try:
-            VERBOSE.pause()
-            [f.stop() for f in mag.files]
-            return mag
-        except TimeoutError:
-            mag.stop()
-            return None
-        finally:
-            VERBOSE.resume()
-    
-    @cached_property
-    def file(self) -> TorrentFile | None:
+        if do_filter:
+            magnets = filter(self.weights, magnets)
 
-        while self._magnets and (self.magnet is None):
-            del self.magnet
+        for mag in magnets:
 
-        if self.magnet:
+            mag.start()
+
+            try:
+                VERBOSE.pause()
+                [f.stop() for f in mag.files]
+            except TimeoutError:
+                mag.stop()
+                continue
+            finally:
+                VERBOSE.resume()
+
+            self.magnet = mag
 
             files = self.magnet.files.copy()
             files.filter(self.weights)
             files.filter(lambda f: f.path.type=='video')
 
-            file = files.max(lambda f: f.size)
+            self.file = files.max(lambda f: f.size)
             
-            if file is not None:
-                file.start()
-                return file
+            if self.file is not None:
+                self.file.start()
+                return
+    
+    def start(self) -> None:
+        self._start( True, qbit.queue.read )
+        self._start( True, lambda: thePirateBay.search(*self.queries) )
 
 class Movie(MediaItem):
 
@@ -215,10 +205,10 @@ class Episode(MediaItem):
 
         self.queries = [
             self.show.Title,
-            *self.season.queries,
             f'{self.show.Title} s{season:02d}e{self:02d}',
             f'{self.show.Title} {season:02d}x{self:02d}',
-            f'{self.show.Title} {season}{self:02d}'
+            f'{self.show.Title} {season}{self:02d}',
+            f'{self.show.Title} {season} {self:02d}'
         ]
 
         self.weights = Weights(
@@ -229,12 +219,12 @@ class Episode(MediaItem):
             UPLOADED = self.show.omdb.Released
         )
 
-    @cached_property
-    def file(self):
+    def start(self) -> None:
 
-        self.magnet = self.season.magnet
-        
-        return super().file
+        if self.season.magnet:
+            self._start(False, lambda: [self.season.magnet])
+
+        super().start()
 
     @cached_property
     def paths(self) -> tuple[Path, Path]:

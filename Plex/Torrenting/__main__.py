@@ -17,6 +17,7 @@ while len(queue) < Args['limit']:
     
     try:
         d = next(Missing)
+        d.start()
         if d.file:
             queue += [d]
             Log.INFO(f'Downloading File: {d=}')
