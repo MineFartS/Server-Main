@@ -11,16 +11,20 @@ def children[T](dir, clazz:Type[T]):
     for path in Path(f'E:/Plex/Media/{dir}/').children:
 
         if contains.any(path.name, Args['filter']):
+            try:
 
-            item = clazz(
-                title = path.name.split(' (')[0],
-                year = int(path.name.split('(')[1].split(')')[0])
-            )
+                item = clazz(
+                    title = path.name.split(' (')[0],
+                    year = int(path.name.split('(')[1].split(')')[0])
+                )
 
-            if path.is_file:
-                item.finish = path.delete
+                if path.is_file:
+                    item.finish = path.delete
 
-            yield item
+                yield item
+
+            except IndexError:
+                Log.FAIL(exc_info=True)
 
 def notexists[T](items:list[T]) -> filter[T]:
     return filter(lambda e: not e.exists, items)
