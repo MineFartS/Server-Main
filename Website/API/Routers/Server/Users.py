@@ -25,6 +25,7 @@ async def _(
     }
 
     _path = Users.child(f'/philh/{username}/Website{path}')
+    _path.mkdir()
 
     if path[-1] != '/':
         path += '/'
