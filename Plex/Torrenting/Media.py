@@ -48,16 +48,18 @@ class MediaItem:
 
         for mag in magnets:
 
-            mag.start()
+            if not mag.exists:
 
-            try:
-                VERBOSE.pause()
-                [f.stop() for f in mag.files]
-            except TimeoutError:
-                mag.stop()
-                continue
-            finally:
-                VERBOSE.resume()
+                mag.start()
+
+                try:
+                    VERBOSE.pause()
+                    [f.stop() for f in mag.files]
+                except TimeoutError:
+                    mag.stop()
+                    continue
+                finally:
+                    VERBOSE.resume()
 
             self.magnet = mag
 
@@ -69,7 +71,8 @@ class MediaItem:
             
             if self.file is not None:
                 self.file.start()
-                return
+
+            break
     
     def start(self) -> None:
         self._start( True, qbit.queue.read )
