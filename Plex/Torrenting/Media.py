@@ -63,13 +63,13 @@ class MediaItem:
 
             self.magnet = mag
 
-            files = self.magnet.files.copy()
-            files.filter(self.weights)
-            files.filter(lambda f: f.path.type=='video')
+            files: list[TorrentFile] = list(filter(
+                lambda f: self.weights(f) and f.path.type=='video',
+                self.magnet.files
+            ))
 
-            self.file = files.max(lambda f: f.size)
-            
-            if self.file is not None:
+            if len(files) > 0:
+                self.file = max(files, key=lambda f: f.size)
                 self.file.start()
 
             break
