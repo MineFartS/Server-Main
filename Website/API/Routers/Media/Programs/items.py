@@ -1,8 +1,12 @@
 from philh_myftp_biz.web.driver import Driver
 
 class Blender:
-    
-    Windows  = 'https://mirrors.iu13.net/blender/release/Blender3.6/blender-3.6.23-windows-x64.msi' # TODO Make Dynamic
+
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open('https://www.blender.org/download/')
+            return d.element('class', 'plausible-event-name=Downloads+Blender')[0].href
 
 class Disk_Drill:
 
@@ -59,6 +63,8 @@ class Wake_On_Lan:
 class VS_Code:
 
     Windows = "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64"
+
+    Linux = "https://snapcraft.io/code" # TODO
         
 class TeraCopy:
 
@@ -226,7 +232,11 @@ class HP_BCU:
 
 class NSIS:
 
-    Windows = "https://nsis.sourceforge.io/Download" # TODO
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://nsis.sourceforge.io/Download")
+            return d.element('class', 'external text')[0].href
 
 class Crystal_Disk_Info:
 
@@ -254,15 +264,19 @@ class iTunes:
 
 class OBS:
 
-    Windows = "https://obsproject.com/download" # TODO
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://obsproject.com/download")
+            return d.element('class', 'green_btn download-welcome')[0].href
 
 class DVD_Decrypter:
 
-    Windows = "https://www.techspot.com/downloads/downloadnowfile/12/?evp=467c3cf24c6f97d63023fa2b8fc6ea1e&file=14" # TODO
+    Windows = "https://www.techspot.com/downloads/downloadnowfile/12/?evp=467c3cf24c6f97d63023fa2b8fc6ea1e&file=14"
 
 class Auto_Keyboard_Presser:
 
-    Windows = "https://sourceforge.net/projects/autokeyboardpresser/files/Autosofted_Auto_Keyboard_Presser_1.9.exe/download" # TODO
+    Windows = "https://sourceforge.net/projects/autokeyboardpresser/files/Autosofted_Auto_Keyboard_Presser_1.9.exe/download"
 
 class Eagler_Craft:
 
@@ -304,8 +318,69 @@ class Free_File_Sync:
     Windows = "https://github.com/hkneptune/FreeFileSync/releases/latest" # TODO
     MacOS = Windows # TODO
     Linux = Windows # TODO
+        'MacOS': r"FreeFileSync_(.*)_macOS",
 
 class Certify_The_Web:
 
-    Windows = "https://certifytheweb.com/home/download" # TODO
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://certifytheweb.com/home/download")
+            return d.element('class', 'container body-content')[0].children[3].children[0].href
+
+class ReclaiMe:
+
+    Windows = "https://www.reclaime.com/download.aspx/" # TODO
+
+class TestDisk:
+
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://www.cgsecurity.org/wiki/TestDisk_Download")
+            return d.element('class', 'download-link')[0].href
+
+class Revo_Uninstaller:
+
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://www.revouninstaller.com/start-freeware-download/")
+            return d.element('class', 'price-box__button')[0].href
+
+class Fing:
+
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://www.fing.com/desktop/download-windows/")
+            return d.element('class', 'price-sk-btn--primary')[2].href
+
+class SQLite_DB_Browser:
+
+    @property
+    def Windows(self):
+        with Driver() as d:
+            d.open("https://sqlitebrowser.org/dl/")
+            return d.element('xpath', '/html/body/div/main/article/div/ul[1]/li[3]/a')[0].href
+
+class Project_Lasso:
+
+    Windows = "https://dl.bitsum.com/files/processlassosetup64.exe"
+
+class AutomationDirect_ProSuite:
+
+    @property
+    def Windows(self):
+        with Driver() as d:
+
+            d.open("https://www.automationdirect.com/support/software-downloads?itemcode=Productivity%20Suite#")
+
+            d.element('class', 'green-button-download')[0].click()
+            d.element('class', 'form-check-input')[0].click()
+            d.element('xpath', '/html/body/div[2]/div[2]/div[2]/div[4]/div/div/div/div[5]/div/div/div[2]/div[2]/button')[0].click()
+
+            # TODO: Needs Account
+
+            return ""
 
