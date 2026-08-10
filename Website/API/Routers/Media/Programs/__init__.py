@@ -8,10 +8,10 @@ OS = Literal['Windows', 'MacOS', 'Linux']
 
 router = APIRouter('/Media/Programs')
 
+cache: dict[tuple[str, str], str|Path] = {}
+
 @router.get('/list')
-def _(
-    os: OS
-) -> list[str]:
+def _(os: OS) -> list[str]:
     
     programs: list[str] = []
     
@@ -24,13 +24,13 @@ def _(
     return sorted(programs)
 
 @router.get('/get', response_model=None)
-def _(
-    name: str,
-    os: OS
-) -> RemoteFileResponse | FileResponse:
+def _(name: str, os: OS) -> RemoteFileResponse | FileResponse:
 
-    program = getattr(items, name) ()
-    item: str|Path = getattr(program, os)
+    if (key := (name, os)) not in cache:
+        program = getattr(items, name) ()
+        cache[key] = getattr(program, os)
+
+    item: str|Path = cache[key]
 
     if isinstance(item, Path):
         return FileResponse(item.path)
