@@ -1,18 +1,16 @@
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.responses import RemoteFileResponse, FileResponse
 from philh_myftp_biz.pc.Path import Path
 from fastapi import APIRouter
 from typing import Literal
 from . import items
 
-systems = 'Windows', 'MacOS', 'Linux'
+OS = Literal['Windows', 'MacOS', 'Linux']
 
-router = APIRouter(
-    prefix = '/Media/Programs'
-)
+router = APIRouter('/Media/Programs')
 
 @router.get('/list')
 def _(
-    os: Literal[*systems]
+    os: OS
 ) -> list[str]:
     
     programs: list[str] = []
@@ -28,14 +26,15 @@ def _(
 @router.get('/get', response_model=None)
 def _(
     name: str,
-    os: Literal[*systems]
-) -> RedirectResponse | FileResponse:
+    os: OS
+) -> RemoteFileResponse | FileResponse:
 
     program = getattr(items, name) ()
     item: str|Path = getattr(program, os)
 
     if isinstance(item, Path):
         return FileResponse(item.path)
-    elif isinstance(item, str):
-        return RedirectResponse(item)
+    
+    elif isinstance(item, str):        
+        return RemoteFileResponse(item, name)
 
