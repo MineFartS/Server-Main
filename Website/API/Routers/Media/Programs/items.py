@@ -1,4 +1,5 @@
 from philh_myftp_biz.web.driver import Driver
+from . import _frames
 
 class Blender:
 
@@ -18,11 +19,16 @@ class disk2vhd:
     
     Windows = "https://live.sysinternals.com/disk2vhd64.exe"
 
-class Github_Desktop:
+class Github_Desktop(_frames.GitHub):
 
     Windows = "https://central.github.com/deployments/desktop/desktop/latest/win32"
 
     MacOS = "https://central.github.com/deployments/desktop/desktop/latest/darwin"
+
+    files = {
+        'Linux': r"GitHubDesktop-linux-arm64-(.*)-(.*)(?!\.deb\.sha256)\.deb"
+    }
+    project = 'shiftkey/desktop'
 
 class htTrack:
 
@@ -210,21 +216,33 @@ class Free_ISO_Creator:
 
     Windows = "https://www.softsea.com/download/Free-ISO-Creator.html" # TODO
 
-class Ghidra:
+class Ghidra(_frames.GitHub):
+    
+    files = {
+        'Windows': r"ghidra_(.*).zip"
+    }
 
-    Windows = "https://github.com/NationalSecurityAgency/ghidra/releases/latest" # TODO
+    project = 'NationalSecurityAgency/ghidra'
 
 class MSYS2:
 
     Windows = "https://www.msys2.org" # TODO
 
-class JadX:
+class JadX(_frames.GitHub):
+    
+    files = {
+        'Windows': r"jadx-gui-(.*)-with-jre-win"
+    }
 
-    Windows = "github.com/skylot/jadx/releases/latest" # TODO
+    project = 'skylot/jadx'
 
-class Krokiet:
+class Krokiet(_frames.GitHub):
 
-    Windows = "https://github.com/qarmin/czkawka/releases/latest" # TODO
+    files = {
+        'Windows': r"windows_krokiet_on_windows_skia_opengl"
+    }
+
+    project = 'qarmin/czkawka'
 
 class HP_BCU:
 
@@ -313,12 +331,15 @@ class Plex_DB_Repair:
     MacOS = "https://github.com/ChuckPa/DBRepair/releases/latest/download/DBRepair.sh"
     Linux = MacOS
 
-class Free_File_Sync:
+class Free_File_Sync(_frames.GitHub):
 
-    Windows = "https://github.com/hkneptune/FreeFileSync/releases/latest" # TODO
-    MacOS = Windows # TODO
-    Linux = Windows # TODO
+    files = {
+        'Linux': r"FreeFileSync_(.*)_Linux",
         'MacOS': r"FreeFileSync_(.*)_macOS",
+        'Windows': r"FreeFileSync_(.*)_Windows"
+    }
+
+    project = 'hkneptune/FreeFileSync'
 
 class Certify_The_Web:
 
