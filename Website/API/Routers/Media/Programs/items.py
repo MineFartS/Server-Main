@@ -15,9 +15,8 @@ class Disk_Drill:
 
     MacOS = "https://dl.cleverfiles.com/diskdrill.dmg"
 
-class disk2vhd:
-    
-    Windows = "https://live.sysinternals.com/disk2vhd64.exe"
+class disk2vhd(_frames.staticfile):
+    pass
 
 class Github_Desktop(_frames.GitHub):
 
@@ -34,9 +33,8 @@ class htTrack:
 
     Windows = "https://download.httrack.com/cserv.php3?File=httrack_x64.exe"
 
-class IIS_Rewrite:
-
-    Windows = "https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_en-US.msi"
+class IIS_Rewrite(_frames.staticfile):
+    pass
 
 class LTspice:
 
@@ -62,9 +60,8 @@ class YouTube_DL:
     
     Windows = "https://www.github.com/ytdl-org/ytdl-nightly/releases/latest/download/youtube-dl.exe"
 
-class Wake_On_Lan:
-
-    Windows = "https://github.com/basildane/WakeOnLAN/releases/download/2.12.4/WakeOnLAN_2.12.4.0.exe"
+class Wake_On_Lan(_frames.staticfile):
+    pass
 
 class VS_Code:
 
@@ -244,9 +241,8 @@ class Krokiet(_frames.GitHub):
 
     project = 'qarmin/czkawka'
 
-class HP_BCU:
-
-    Windows = "https://ftp.hp.com/pub/softpaq/sp143501-144000/sp143621.exe"
+class HP_BCU(_frames.staticfile):
+    pass
 
 class NSIS:
 
@@ -260,9 +256,8 @@ class Crystal_Disk_Info:
 
     Windows = "https://sourceforge.net/projects/crystaldiskinfo/files/latest/download" # TODO
 
-class Zello:
-
-    Windows = "https://archive.org/download/zello-setup_202606/ZelloSetup.exe"
+class Zello(_frames.staticfile):
+    pass
 
 class Photoshop:
 
@@ -276,9 +271,8 @@ class iMazing:
 
     Windows = "" # TODO
 
-class iTunes:
-
-    Windows = "https://secure-appldnld.apple.com/itunes12/031-69284-20160802-7E7B2D20-552B-11E6-B2B9-696CECD541CE/iTunes64Setup.exe"
+class iTunes(_frames.staticfile):
+    pass
 
 class OBS:
 
@@ -288,17 +282,14 @@ class OBS:
             d.open("https://obsproject.com/download")
             return d.element('class', 'green_btn download-welcome')[0].href
 
-class DVD_Decrypter:
+class DVD_Decrypter(_frames.staticfile):
+    pass
 
-    Windows = "https://www.techspot.com/downloads/downloadnowfile/12/?evp=467c3cf24c6f97d63023fa2b8fc6ea1e&file=14"
+class Auto_Keyboard_Presser(_frames.staticfile):
+    pass
 
-class Auto_Keyboard_Presser:
-
-    Windows = "https://sourceforge.net/projects/autokeyboardpresser/files/Autosofted_Auto_Keyboard_Presser_1.9.exe/download"
-
-class Eagler_Craft:
-
-    Windows = "https://archive.org/download/eaglercraftx-1.8-u29/EaglercraftX_1.8_Web.zip"
+class Eagler_Craft(_frames.staticfile):
+    pass
 
 class NBT_Editor:
 

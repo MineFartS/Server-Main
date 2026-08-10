@@ -1,4 +1,5 @@
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
+from philh_myftp_biz.pc.Path import Path
 from fastapi import APIRouter
 from typing import Literal
 from . import items
@@ -24,15 +25,17 @@ def _(
 
     return sorted(programs)
 
-@router.get('/get')
+@router.get('/get', response_model=None)
 def _(
     name: str,
     os: Literal[*systems]
-) -> str:
+) -> RedirectResponse | FileResponse:
 
     program = getattr(items, name) ()
+    item: str|Path = getattr(program, os)
 
-    url: str = getattr(program, os)
-
-    return RedirectResponse(url)
+    if isinstance(item, Path):
+        return FileResponse(item.path)
+    elif isinstance(item, str):
+        return RedirectResponse(item)
 
