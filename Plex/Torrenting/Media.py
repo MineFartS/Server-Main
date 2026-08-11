@@ -8,6 +8,16 @@ from philh_myftp_biz import VERBOSE
 from .weights import Weights
 from . import this
 
+#================================================
+
+overrides = [
+    Torrent(name=name, url=url)
+    for name, url in
+    Path('E:/Plex/Torrenting/Overrides.json').JSON.Dict.items()
+]
+
+#================================================
+
 class MediaItem:
 
     queries: list[str]
@@ -76,6 +86,7 @@ class MediaItem:
     
     def start(self) -> None:
         self._start( True, qbit.queue.read )
+        self._start( True, lambda: overrides )
         self._start( True, lambda: thePirateBay.search(*self.queries) )
 
 class Movie(MediaItem):
