@@ -4,9 +4,21 @@
 
 **/__pylogs__/
 
+#==============================================================
 # Plex Media
+
 /Media/*
+
+!/Media/Shows/
+/Media/Shows/*
+
+!/Media/Shows/*/
+/Media/Shows/*/*
+
+!/Media/Shows/*/.plexmatch
 !/Media/purge.py
+
+#==============================================================
 
 # Lockfile
 /__lock__.ig
