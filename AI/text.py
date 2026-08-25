@@ -1,18 +1,19 @@
-from philh_myftp_biz.terminal import set_package
+from philh_myftp_biz.terminal import set_package, Args
 set_package('E:/AI/')
 
 from philh_myftp_biz.modules import Service
 from ollama import pull, chat, ChatResponse
 from philh_myftp_biz.terminal import Log
-from . import args, messages
 from typing import Iterator
+from . import messages
 
 OllamaServ = Service('E:/AI/Ollama/')
+ollama = Client('http://127.0.0.1:11434')
 
 # ====================================================
 # MODEL
 
-args.Arg(
+Args.Arg(
     name = 'model',
     default = 'llama3'
 )
@@ -21,7 +22,7 @@ if not OllamaServ.running:
 
     OllamaServ.start()
 
-Log.VERB(f'Pulling Model: {args['model']}')
+Log.VERB(f'Pulling Model: {Args['model']}')
 
 # Download & install the model
 pull(args['model'])
@@ -32,7 +33,7 @@ pull(args['model'])
 Log.VERB(f'Sending Messages to Model')
 
 stream: Iterator[ChatResponse] = chat(
-    model = args['model'],
+    model = Args['model'],
     messages = messages,
     stream = True
 )

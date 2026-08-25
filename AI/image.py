@@ -1,36 +1,36 @@
-from philh_myftp_biz.terminal import set_package
+from philh_myftp_biz.terminal import set_package, Args
 set_package('E:/AI/')
 
 from philh_myftp_biz.num import nearest_multiple
 from diffusers import StableDiffusionPipeline
 from philh_myftp_biz.file import temp
 from philh_myftp_biz.pc import Path
-from . import args, messages
+from . import messages
 from psutil import Process
 from torch import float16
 
 # ====================================================
 # PARSE INPUT
 
-args.Arg(
+Args.Arg(
     name = 'model',
     default = 'runwayml/stable-diffusion-v1-5'
 )
 
-args.Arg(
+Args.Arg(
     name = 'path',
     default = temp('gen_image', 'png'),
     desc = 'Path to save image',
     handler = Path
 )
 
-args.Arg(
+Args.Arg(
     name = 'width',
     default = 512,
     handler = lambda x: nearest_multiple(int(x), 8)
 )
 
-args.Arg(
+Args.Arg(
     name = 'height',
     default = 512,    
     handler = lambda x: nearest_multiple(int(x), 8)
@@ -43,7 +43,7 @@ args.Arg(
 Process().cpu_affinity([0, 1])
 
 pipeline = StableDiffusionPipeline.from_pretrained(
-    pretrained_model_name_or_path = args['model'],
+    pretrained_model_name_or_path = Args['model'],
     torch_dtype = float16,
     cache_dir = 'E:/AI/__pycache__/',
     safety_checker = None,
@@ -58,13 +58,13 @@ pipeline.to("cuda")
 # GENERATE IMAGE
 
 # Path for output image
-imgfile: Path = args['path']
+imgfile: Path = Args['path']
 
 # Prompt the pipeline
 prompt = pipeline(
     prompt = messages.prompt(),
-    height = args['height'],
-    width = args['width']
+    height = Args['height'],
+    width = Args['width']
 )
 
 # Save the generated image

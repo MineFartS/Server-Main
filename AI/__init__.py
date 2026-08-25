@@ -1,4 +1,4 @@
-from philh_myftp_biz.terminal import ParsedArgs, cls
+from philh_myftp_biz.terminal import Args, cls
 from philh_myftp_biz.modules import Module
 from philh_myftp_biz import json, HELP
 from typing import Literal, NoReturn
@@ -11,14 +11,12 @@ this = Module('E:/AI/')
 # ====================================================
 # PARSE INPUT
 
-args = ParsedArgs()
-
-args.Arg(
+Args.Arg(
     name = 'messages',
     handler = json.loads
 )
 
-args.Arg(
+Args.Arg(
     name = 'prompt'
 )
 
@@ -82,12 +80,12 @@ class Messages(list[dict[Literal['kind', 'role', 'content'], str]]):
 if HELP:
     messages = None
 
-elif args['messages']:
-    messages = Messages(args['messages'])
+elif Args['messages']:
+    messages = Messages(Args['messages'])
 
-elif args['prompt']:
+elif Args['prompt']:
     messages = Messages()
-    messages.add_text('user', args['prompt'])
+    messages.add_text('user', Args['prompt'])
 
 else:
     raise Exception('No prompt or messages given')
