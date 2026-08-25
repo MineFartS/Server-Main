@@ -1,13 +1,11 @@
-from . import IndexRegistry, IndexEntry, Search
+from . import IndexRegistry, IndexEntry, root
 from philh_myftp_biz.terminal import Log
-from . import root
 from re import sub
 
 # ================================================================================================================
 # Update index.json files
 
-# Clear the search registry
-Search.save([])
+Search: list[dict] = []
 
 dirs = [root] + [p for p in root.descendants if p.is_dir]
 
@@ -32,7 +30,9 @@ for p in dirs:
         registry += entry.JSON
 
         # Append the entry to the search registry
-        Search += entry.JSON
+        Search += [entry.JSON]
+
+root.child('/_/Search/search.json').JSON.save(Search)
 
 # ================================================================================================================
 # Update web.config
