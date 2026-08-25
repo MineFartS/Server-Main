@@ -19,25 +19,22 @@ PIDstore.save(getpid())
 
 # ================================================================================================================
 
-class IndexRegistry(Path, List):
+class IndexRegistry:
 
     def __init__(self,
-        dir: Path
-    ):
-        
-        indexJSON = JSON(dir.child('index.json'))
-
-        Path.__init__(self, dir)
-        List.__init__(self, indexJSON)
+        path: Path
+    ) -> None:
+        self.file = path.child('index.json')
+        self.list = self.file.JSON.List
+        self.path = path
 
 class IndexEntry(Path):
 
     dir: Path
-    """ """
 
     def __init__(self,
         path: Path
-    ):
+    ) -> None:
         
         super().__init__(path)
 

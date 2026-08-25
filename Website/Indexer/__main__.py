@@ -12,22 +12,22 @@ dirs = [root] + [p for p in root.descendants if p.is_dir]
 # Iter through all descendants of root
 for p in dirs:
 
-    registry = IndexRegistry(p)
+    reg = IndexRegistry(path=p)
 
-    Log.INFO(f'Building Registry: {registry}')
+    Log.INFO(f'Building Registry: {reg.path}')
 
     # Clear the directory registry
-    registry.save([])
+    reg.list.save([])
 
     # Iter through all items in the registry
-    for child in registry.children:
+    for child in reg.path.children:
 
         entry = IndexEntry(child)
         
         Log.VERB(f'Adding Entry: {entry}')
 
         # Append the entry to the directory registry
-        registry += entry.JSON
+        reg.list += entry.JSON
 
         # Append the entry to the search registry
         Search += [entry.JSON]
