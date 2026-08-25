@@ -71,6 +71,53 @@ class TextResult extends Result {
 
 }
 
+class ImageResult extends Result {
+
+    /**
+     * @param {string} img Image URL
+     * @param {string|ClickCallback} callback Can be a URL string or a function
+     * @param {string} hover Hover Text
+     * @param {boolean} ig_err Ignore Images with Loading Errors
+     */
+    constructor(img, callback, hover='', ig_err=false) {
+        super(callback)
+
+        /** @type {string} */
+        this.img = img
+
+        /** @type {string} */
+        this.hover = hover
+
+        /** @type {boolean} */
+        this.ig_err = ig_err
+    
+    }
+
+    /**
+     * @returns {HTMLElement}
+     */
+    build() {
+
+        let e = document.createElement('img');
+        e.setAttribute('src', this.img);
+        e.setAttribute('title', this.hover);
+
+        if (this.ig_err) {
+            e.setAttribute('onerror', "this.remove()");
+        }
+        
+        if (this.isUrl) {
+            e.setAttribute('href', this.callback)
+        } else {
+            e.setAttribute('href', '#')
+            e.addEventListener('click', this.callback)
+        }
+
+        return e
+    }
+
+}
+
 /**
  * @param {SearchCallback} callback 
  */
