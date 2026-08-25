@@ -153,6 +153,13 @@ class Show:
     def __repr__(self) -> str:
         return f'<Show "{self.Title}" @{loc(self)}>'
 
+    @cached_property
+    def episodes(self) -> tuple[Episode, ...]:
+        episodes = []
+        for s in self.seasons:
+            episodes += s.episodes
+        return tuple(episodes)
+
 class Season(MediaItem):
 
     def __init__(self,
