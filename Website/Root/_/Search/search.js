@@ -123,13 +123,15 @@ function postSearch(callback) {
 
     let lterm = ''
 
-    setInterval(() => {
+    setInterval(async () => {
 
         let term = e.Search.value.toLowerCase()
 
         if (term != lterm) {
+            
+            lterm = term;
 
-            let results = callback(term);
+            let results = await callback(term);
 
             // Clear all options
             e.options.innerHTML = ''
@@ -137,8 +139,6 @@ function postSearch(callback) {
             for (let r of results) {
                 e.options.insertAdjacentElement('beforeend', r.build())
             } 
-
-            lterm = term;
 
             // Show message if no results found
             if (e.options.children.length > 0) {
