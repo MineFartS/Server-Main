@@ -7,7 +7,7 @@ fetch('search.json').then(r => r.json()).then(items =>
         for (let i of items) {
 
             if (i.Visible && i.Title.toLowerCase().includes(term)) {
-                results.push( new Result(i.Title, i.URL) )
+                results.push( new TextResult(i.Title, i.URL) )
             }
 
         }

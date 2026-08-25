@@ -6,20 +6,67 @@
 
 e['Search'] = document.getElementById('Search')
 
+/**
+ * @callback ClickCallback
+ * @param {PointerEvent} event
+ * @returns {void}
+ */
+
 class Result {
     
     /**
-     * @param {string} title 
-     * @param {string} url 
+     * @param {string|ClickCallback} callback Can be a URL string or a function
      */
-    constructor(title, url) {
+    constructor(title, callback) {
+
+        /** @type {string} */
+        this.callback = callback
+
+        /** @type {boolean} */
+        this.isUrl = (typeof callback === 'string');
+
+    }
+
+    /**
+     * @returns {HTMLElement}
+     */
+    build() {
+        return null;
+    }
+
+}
+
+class TextResult extends Result {
+
+    /**
+     * @param {string} title 
+     * @param {string|ClickCallback} callback Can be a URL string or a function
+     */
+    constructor(title, callback) {
+        super(callback)
 
         /** @type {string} */
         this.title = title
+    
+    }
 
-        /** @type {string} */
-        this.url = url
+    /**
+     * @returns {HTMLElement}
+     */
+    build() {
 
+        let e = document.createElement('a')
+        e.setAttribute('class', 'option')
+        e.textContent = this.title
+        
+        if (this.isUrl) {
+            e.setAttribute('href', this.callback)
+        } else {
+            e.setAttribute('href', '#')
+            e.addEventListener('click', this.callback)
+        }
+
+        return e
     }
 
 }
@@ -43,9 +90,7 @@ function postSearch(callback) {
             e.options.innerHTML = ''
 
             for (let r of results) {
-                e.options.insertAdjacentHTML('beforeend', `
-                    <a class="option" href="${r.url}">${r.title}</a>
-                `)
+                e.options.insertAdjacentElement('beforeend', r.build())
             } 
 
             lterm = term;
