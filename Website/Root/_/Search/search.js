@@ -121,22 +121,26 @@ class ImageResult extends Result {
  */
 function postSearch(callback) {
 
+    const results = {};
+
     let lterm = ''
 
     setInterval(async () => {
 
-        let term = e.Search.value.toLowerCase()
+        let term = e.Search.value.toLowerCase().trim()
 
         if (term != lterm) {
             
             lterm = term;
 
-            let results = await callback(term);
+            if (results[term] == undefined) {
+                results[term] = await callback(term);
+            }
 
             // Clear all options
             e.options.innerHTML = ''
 
-            for (let r of results) {
+            for (let r of results[term]) {
                 e.options.insertAdjacentElement('beforeend', r.build())
             } 
 
