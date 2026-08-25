@@ -4,26 +4,28 @@
  * @returns {Result[]}
  */
 
-e['Search'] = document.getElementById('Search')
-
 /**
  * @callback ClickCallback
  * @param {PointerEvent} event
  * @returns {void}
  */
 
+e['Search'] = document.getElementById('Search')
+e['options'] = document.getElementById('options')
+
 class Result {
     
     /**
      * @param {string|ClickCallback} callback Can be a URL string or a function
+     * @param {string} tag
      */
-    constructor(title, callback) {
+    constructor(callback, tag) {
+
+        /** @type {string} */
+        this.tag = tag
 
         /** @type {string} */
         this.callback = callback
-
-        /** @type {boolean} */
-        this.isUrl = (typeof callback === 'string');
 
     }
 
@@ -31,7 +33,19 @@ class Result {
      * @returns {HTMLElement}
      */
     build() {
-        return null;
+
+        let e = document.createElement(this.tag);
+        
+        if (typeof this.callback === 'string') {
+            e.setAttribute('href', this.callback)
+        } else {
+            e.addEventListener('click', evt=>{
+                evt.preventDefault();
+                this.callback(evt);
+            });
+        }
+
+        return e
     }
 
 }
@@ -43,7 +57,7 @@ class TextResult extends Result {
      * @param {string|ClickCallback} callback Can be a URL string or a function
      */
     constructor(title, callback) {
-        super(callback)
+        super(callback, 'a')
 
         /** @type {string} */
         this.title = title
@@ -54,18 +68,9 @@ class TextResult extends Result {
      * @returns {HTMLElement}
      */
     build() {
-
-        let e = document.createElement('a')
+        let e = super.build()
         e.setAttribute('class', 'option')
         e.textContent = this.title
-        
-        if (this.isUrl) {
-            e.setAttribute('href', this.callback)
-        } else {
-            e.setAttribute('href', '#')
-            e.addEventListener('click', this.callback)
-        }
-
         return e
     }
 
@@ -80,7 +85,7 @@ class ImageResult extends Result {
      * @param {boolean} ig_err Ignore Images with Loading Errors
      */
     constructor(img, callback, hover='', ig_err=false) {
-        super(callback)
+        super(callback, 'img')
 
         /** @type {string} */
         this.img = img
@@ -97,20 +102,13 @@ class ImageResult extends Result {
      * @returns {HTMLElement}
      */
     build() {
-
-        let e = document.createElement('img');
+        let e = super.build()
+        
         e.setAttribute('src', this.img);
         e.setAttribute('title', this.hover);
 
         if (this.ig_err) {
             e.setAttribute('onerror', "this.remove()");
-        }
-        
-        if (this.isUrl) {
-            e.setAttribute('href', this.callback)
-        } else {
-            e.setAttribute('href', '#')
-            e.addEventListener('click', this.callback)
         }
 
         return e
