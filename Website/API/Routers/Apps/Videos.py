@@ -75,41 +75,15 @@ async def upload(
         return RedirectResponse(vid.url)
 
 @router.get('/List')
-async def read_item( 
-    username: None|str = None,
-    token: None|str = None
-) -> list[dict]:
-    """
-    List All Videos
-
-    If Username and Auth Token are valid, then the user's private videos will be included
-    """
-    
-    if username:
-        user = User(username)
-        show_private = user.checkAuth(token)
-    else:
-        show_private = False
+async def _() -> list[dict]:
+    """List All Videos"""
 
     items = []
     
     for p in root.child('/Apps/Videos/files/').children:
-
         if p.is_dir:
-
             vid = VideoObj(p.name)
-            
-            if vid['Visibility'] == 'Public':
-                visible = True
-            
-            elif show_private:
-                visible = (vid['Uploader'] == username)
-            
-            else:
-                visible = False
-
-            if visible:
-                items += [vid['id']]
+            items += [vid.read()]
 
     return items
 
