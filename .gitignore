@@ -5,3 +5,7 @@ System Volume Information
 **/__pycache__
 **/__pylogs__
 /_**
+
+/Backup/E
+**/sync.ffs_lock
+**/sync.ffs_db
