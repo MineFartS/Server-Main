@@ -1,20 +1,17 @@
 
 from philh_myftp_biz.web.torrent import thePirateBay, qBitTorrent
+from philh_myftp_biz.terminal import Args, Log
 from philh_myftp_biz.web.driver import Driver
 from philh_myftp_biz.modules import Module
-from philh_myftp_biz.terminal import Args
-from philh_myftp_biz.terminal import Log
 from json.decoder import JSONDecodeError
-from philh_myftp_biz.json import List
-from philh_myftp_biz.file import JSON
+from philh_myftp_biz.pc import Path
 from os import getpid
 
 #==============================================
 
-this = Module('E:/Plex/')
 VM = Module('E:/Virtual Machines/')
 
-PIDstore: List[str] = List(JSON(this.child('/Torrenting/__pycache__/PID.json')))
+PIDstore = Path('E:/Plex/Torrenting/__pycache__/PID.json').JSON.List
 PIDstore.save([f'python-{getpid()}'])
 
 #==============================================

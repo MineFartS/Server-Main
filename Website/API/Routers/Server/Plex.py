@@ -1,8 +1,8 @@
 from philh_myftp_biz.modules import Service
+from philh_myftp_biz.functools import remport
 from philh_myftp_biz.pc import Path
 from fastapi import APIRouter
-from typing import Literal
-import sys
+from typing import Literal, TYPE_CHECKING
 
 # Declare FastAPI router
 router = APIRouter(
@@ -10,18 +10,19 @@ router = APIRouter(
 )
 
 #===========================
-pr = 'E:/Plex/'
-if pr not in sys.path:
-    sys.path.append(pr)
-from Torrenting.Media import Show
-from Torrenting.__init__ import driver
-driver.close()
-#===========================
 
 Torrenting = Service('E:/Plex/Torrenting/')
 
 movies = Path('E:/Plex/Media/Movies/')
 shows = Path('E:/Plex/Media/Shows/')
+
+#===========================
+
+if TYPE_CHECKING:
+    from Torrenting import Media as _Media
+Media: '_Media' = remport(Torrenting.child('Media.py'))
+
+#===========================
 
 @router.get('/download')
 async def read_item(
@@ -38,7 +39,7 @@ async def read_item(
         dir = shows.child(f'/{name}/')
 
         if dir.exists:
-            s = Show(Title, Year)
+            s = Media.Show(Title, Year)
             p = sum(1 for e in s.episodes if e.exists) / len(s.episodes)
 
             mess = f'Show is {p:.1%} downloaded'

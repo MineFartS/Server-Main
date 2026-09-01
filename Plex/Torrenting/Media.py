@@ -5,8 +5,11 @@ from philh_myftp_biz.web.omdb import EpisodeData, Omdb
 from typing import Callable, Iterable
 from philh_myftp_biz.pc import Path
 from philh_myftp_biz import VERBOSE
-from .weights import Weights
-from . import this
+
+try:
+    from .weights import Weights
+except ImportError:
+    Weights = object()
 
 #================================================
 
@@ -91,7 +94,7 @@ class MediaItem:
 
 class Movie(MediaItem):
 
-    dir = this.child('/Media/Movies/')
+    dir = Path('E:/Plex/Media/Movies/')
 
     def __init__(self,
         title: str,
@@ -118,7 +121,7 @@ class Movie(MediaItem):
     def paths(self) -> tuple[Path, Path]:
         return (
             self.file.path, 
-            this.child(f"/Media/Movies/{self.Title} ({self.Year}).{self.file.path.ext}")
+            self.dir.child(f"{self.Title} ({self.Year}).{self.file.path.ext}")
         )
     
     def __repr__(self) -> str:
@@ -126,7 +129,7 @@ class Movie(MediaItem):
 
 class Show:
 
-    dir = this.child('/Media/Shows/')
+    dir = Path('E:/Plex/Media/Shows/')
 
     def __init__(self,
         title: str,
