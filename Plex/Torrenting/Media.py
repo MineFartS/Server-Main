@@ -1,8 +1,9 @@
 from philh_myftp_biz.web.torrent import Torrent, TorrentFile, thePirateBay
 from philh_myftp_biz.functools import loc, attr, cached_property
 from philh_myftp_biz.web.torrent import qBitTorrent as qbit
-from philh_myftp_biz.web.omdb import EpisodeData, Omdb
+from philh_myftp_biz.web.torrent.models import EpisodeData
 from typing import Callable, Iterable
+from philh_myftp_biz.web import Omdb
 from philh_myftp_biz.pc import Path
 from philh_myftp_biz import VERBOSE
 
