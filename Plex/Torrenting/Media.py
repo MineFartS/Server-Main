@@ -63,10 +63,8 @@ class MediaItem:
         for mag in magnets:
 
             if not mag.exists:
-
-                mag.start()
-
                 try:
+                    mag.start()
                     VERBOSE.pause()
                     [f.stop() for f in mag.files]
                 except TimeoutError:
