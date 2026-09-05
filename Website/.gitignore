@@ -22,12 +22,5 @@ Certificates/
 *.mp4
 *.mov
 
-# Images
-*.webp
-*.png
-*.heic
-*.jpeg
-*.jpg
-
 # Misc
 *.psd
