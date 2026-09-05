@@ -22,3 +22,8 @@
 	branch = 3.12.10
     ignore = all
 
+[submodule "Minecraft/Worlds"]
+	path = Minecraft/Worlds
+	url = https://github.com/philh-myftp-biz/Minecraft-Worlds
+    ignore = all
+
